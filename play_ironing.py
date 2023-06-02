@@ -16,14 +16,12 @@ TEST_EVERY = 10
 WIN_BATCH_SIZE = 10
 LOSE_BATCH_SIZE = 10
 
-
 class ConstantsIndices:
     def __init__(self):
         self.observations = None
         self.actions = None
         self.goal = None
         self.ctx = set()
-
 
 def create_constants(env, cmanager):
     cmanager.constants_indices = ConstantsIndices()
@@ -49,52 +47,11 @@ def create_constants(env, cmanager):
     cmanager.constants_indices.actions = c_actions
     cmanager.constants_indices.goal = c_goal
 
-
-def generateLine(env):
-    observations = []
-    actions = []
-
-    obs, _ = env.reset()
-    observations.append(obs)
-    for _ in range(MAX_STEPS):
-        a = env.action_space.sample()
-        actions.append(a)
-
-        obs, reward, terminated, _, _ = env.step(a)
-        observations.append(obs)
-
-        if terminated:
-            break
-
-    # Reach goal: 1, stay in path: 0, get out of path: -0.5
-    if reward > 0.5:
-        goal = True
-    else:
-        goal = False
-
-    return observations, actions, goal
-
-
 def LCS(param, cmanager):
     if sc.LCSegment == sc.LCSegment_impl_wChains:
         return sc.LCSegment(param, cmanager)
     else:
         return sc.LCSegment(param)
-
-
-def generate_examples(env, pBatchSize, nBatchSize):
-    win_examples = []
-    lose_examples = []
-    while len(win_examples) < pBatchSize or len(lose_examples) < nBatchSize:
-        line = generateLine(env)
-        if line[2]:
-            if len(win_examples) < pBatchSize:
-                win_examples.append(line)
-        else:
-            if len(lose_examples) < nBatchSize:
-                lose_examples.append(line)
-    return win_examples, lose_examples
-
 
 def example_to_relations(example, cmanager):
     pos_rels = []
@@ -184,7 +141,6 @@ def example_to_relations(example, cmanager):
 
     return pos_rels, neg_rels
 
-
 def test(alg, las, env):
     constants_observations = alg.cmanager.constants_indices.observations
     constants_goal_win = alg.cmanager.constants_indices.goal["win"]
@@ -224,6 +180,72 @@ def test(alg, las, env):
 
     return reward > 0.5, all_moves
 
+class trainingParameters:
+    def __init__(self):
+        self.win_batchSize = 0
+        self.lose_batchSize = 0
+
+params = trainingParameters()
+params.win_batchSize = WIN_BATCH_SIZE
+params.lose_batchSize = LOSE_BATCH_SIZE
+
+useReduceIndicators = True
+byQuotient = False
+
+alg = sc.embedder()
+batchLearner = ql.batchLearner(alg)
+
+batchLearner.useReduceIndicators = useReduceIndicators
+batchLearner.enforceTraceConstraints = True
+batchLearner.byQuotient = byQuotient
+batchLearner.storePositives = True
+
+batchLearner.alg.verbose = False
+batchLearner.verbose = False
+
+cmanager = alg.cmanager
+
+cOrange = "\u001b[33m"
+cGreen = "\u001b[36m"
+cReset = "\u001b[0m"
+
+def generateLine(env):
+    observations = []
+    actions = []
+
+    obs, _ = env.reset()
+    observations.append(obs)
+    for _ in range(MAX_STEPS):
+        a = env.action_space.sample()
+        actions.append(a)
+
+        obs, reward, terminated, _, _ = env.step(a)
+        observations.append(obs)
+
+        if terminated:
+            break
+
+    # Reach goal: 1, stay in path: 0, get out of path: -0.5
+    if reward > 0.5:
+        goal = True
+    else:
+        goal = False
+
+    return observations, actions, goal
+
+def generate_examples(env, pBatchSize, nBatchSize):
+    win_examples = []
+    lose_examples = []
+    while len(win_examples) < pBatchSize or len(lose_examples) < nBatchSize:
+        line = generateLine(env)
+        if line[2]:
+            if len(win_examples) < pBatchSize:
+                win_examples.append(line)
+        else:
+            if len(lose_examples) < nBatchSize:
+                lose_examples.append(line)
+    return win_examples, lose_examples
+
 """
 # Coordinate Systems for `.csv` and `print(numpy)`
 
@@ -254,37 +276,6 @@ env = gym.make(
     # goalX=7,
     # goalY=2,
 )
-
-
-class trainingParameters:
-    def __init__(self):
-        self.win_batchSize = 0
-        self.lose_batchSize = 0
-
-
-params = trainingParameters()
-params.win_batchSize = WIN_BATCH_SIZE
-params.lose_batchSize = LOSE_BATCH_SIZE
-
-useReduceIndicators = True
-byQuotient = False
-
-alg = sc.embedder()
-batchLearner = ql.batchLearner(alg)
-
-batchLearner.useReduceIndicators = useReduceIndicators
-batchLearner.enforceTraceConstraints = True
-batchLearner.byQuotient = byQuotient
-batchLearner.storePositives = True
-
-batchLearner.alg.verbose = False
-batchLearner.verbose = False
-
-cOrange = "\u001b[33m"
-cGreen = "\u001b[36m"
-cReset = "\u001b[0m"
-
-cmanager = alg.cmanager
 
 # Constants
 create_constants(env, cmanager)
