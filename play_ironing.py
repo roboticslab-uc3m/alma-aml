@@ -224,75 +224,6 @@ def test(alg, las, env):
 
     return reward > 0.5, all_moves
 
-
-def batchLearning(
-    batchLearner,
-    alg,
-    env,
-    params,
-):
-    cOrange = "\u001b[33m"
-    cGreen = "\u001b[36m"
-    cReset = "\u001b[0m"
-
-    cmanager = alg.cmanager
-
-    # Constants
-    create_constants(env, cmanager)
-
-    for i in range(NUM_ITER_TRAINING):
-        print("<Generating training set", end="", flush=True)
-        # generate games
-        win_batch, lose_batch = generate_examples(
-            env,
-            params.win_batchSize,
-            params.lose_batchSize,
-        )
-        # turn games into aml relations
-        pbatch = []
-        nbatch = []
-        for ex in win_batch:
-            prels, nrels = example_to_relations(ex, cmanager)
-            pbatch.extend(prels)
-            nbatch.extend(nrels)
-        print(">")
-
-        batchLearner.enforce(pbatch, nbatch)
-
-        print(
-            f"{cOrange}BATCH#: {i}{cReset}",
-            f"seen ({batchLearner.pcount}, {batchLearner.ncount})",
-            f"Generation: {alg.generation}",
-            f"Reserve size: {len(batchLearner.reserve)}",
-        )
-
-        # Test
-        if (i + 1) % TEST_EVERY == 0:
-            target = batchLearner.reserve
-            allConstants = sc.CSegment(
-                cmanager.getConstantSet().constants - cmanager.constants_indices.ctx
-            )
-            las = ql.calculateLowerAtomicSegment(target, allConstants, True)
-
-            count_win = 0
-            count_lose = 0
-            for _ in range(NUM_TESTS):
-                res, all_moves = test(alg, las, env)
-                if res:
-                    count_win += 1
-                else:
-                    count_lose += 1
-                print(f"{cGreen}Wins: {count_win} / Loses: {count_lose}{cReset}")
-                print(all_moves)
-
-        # Reserve Update
-        print("<Updating reserve...", end="", flush=True)
-        cmanager.updateConstantsTo(
-            alg.atomization, batchLearner.reserve, alg.exampleSet
-        )
-        print(">")
-
-
 """
 # Coordinate Systems for `.csv` and `print(numpy)`
 
@@ -349,9 +280,63 @@ batchLearner.storePositives = True
 batchLearner.alg.verbose = False
 batchLearner.verbose = False
 
-batchLearning(
-    batchLearner,
-    alg,
-    env,
-    params,
-)
+cOrange = "\u001b[33m"
+cGreen = "\u001b[36m"
+cReset = "\u001b[0m"
+
+cmanager = alg.cmanager
+
+# Constants
+create_constants(env, cmanager)
+
+for i in range(NUM_ITER_TRAINING):
+    print("<Generating training set", end="", flush=True)
+    # generate games
+    win_batch, lose_batch = generate_examples(
+        env,
+        params.win_batchSize,
+        params.lose_batchSize,
+    )
+    # turn games into aml relations
+    pbatch = []
+    nbatch = []
+    for ex in win_batch:
+        prels, nrels = example_to_relations(ex, cmanager)
+        pbatch.extend(prels)
+        nbatch.extend(nrels)
+    print(">")
+
+    batchLearner.enforce(pbatch, nbatch)
+
+    print(
+        f"{cOrange}BATCH#: {i}{cReset}",
+        f"seen ({batchLearner.pcount}, {batchLearner.ncount})",
+        f"Generation: {alg.generation}",
+        f"Reserve size: {len(batchLearner.reserve)}",
+    )
+
+    # Test
+    if (i + 1) % TEST_EVERY == 0:
+        target = batchLearner.reserve
+        allConstants = sc.CSegment(
+            cmanager.getConstantSet().constants - cmanager.constants_indices.ctx
+        )
+        las = ql.calculateLowerAtomicSegment(target, allConstants, True)
+
+        count_win = 0
+        count_lose = 0
+        for _ in range(NUM_TESTS):
+            res, all_moves = test(alg, las, env)
+            if res:
+                count_win += 1
+            else:
+                count_lose += 1
+            print(f"{cGreen}Wins: {count_win} / Loses: {count_lose}{cReset}")
+            print(all_moves)
+
+    # Reserve Update
+    print("<Updating reserve...", end="", flush=True)
+    cmanager.updateConstantsTo(
+        alg.atomization, batchLearner.reserve, alg.exampleSet
+    )
+    print(">")
