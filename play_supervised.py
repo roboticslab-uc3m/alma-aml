@@ -189,25 +189,18 @@ params = trainingParameters()
 params.win_batchSize = WIN_BATCH_SIZE
 params.lose_batchSize = LOSE_BATCH_SIZE
 
-useReduceIndicators = True
-byQuotient = False
-
 alg = sc.embedder()
 batchLearner = ql.batchLearner(alg)
 
-batchLearner.useReduceIndicators = useReduceIndicators
+batchLearner.useReduceIndicators = True
 batchLearner.enforceTraceConstraints = True
-batchLearner.byQuotient = byQuotient
+batchLearner.byQuotient = False
 batchLearner.storePositives = True
 
 batchLearner.alg.verbose = False
 batchLearner.verbose = False
 
 cmanager = alg.cmanager
-
-cOrange = "\u001b[33m"
-cGreen = "\u001b[36m"
-cReset = "\u001b[0m"
 
 """
 # Coordinate Systems for `.csv` and `print(numpy)`
@@ -242,6 +235,10 @@ env = gym.make(
 
 # Constants
 create_constants(env, cmanager)
+
+cOrange = "\u001b[33m"
+cGreen = "\u001b[36m"
+cReset = "\u001b[0m"
 
 def generateLine(env):
     observations = []
@@ -279,7 +276,6 @@ def generate_examples(env, pBatchSize, nBatchSize):
             if len(lose_examples) < nBatchSize:
                 lose_examples.append(line)
     return win_examples, lose_examples
-
 
 for i in range(NUM_ITER_TRAINING):
     print("<Generating training set", end="", flush=True)
