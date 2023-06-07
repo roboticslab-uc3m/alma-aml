@@ -180,15 +180,6 @@ def test(alg, las, env):
 
     return reward > 0.5, all_moves
 
-class trainingParameters:
-    def __init__(self):
-        self.win_batchSize = 0
-        self.lose_batchSize = 0
-
-params = trainingParameters()
-params.win_batchSize = WIN_BATCH_SIZE
-params.lose_batchSize = LOSE_BATCH_SIZE
-
 alg = sc.embedder()
 batchLearner = ql.batchLearner(alg)
 
@@ -282,8 +273,8 @@ for i in range(NUM_ITER_TRAINING):
     # generate games
     win_batch, lose_batch = generate_examples(
         env,
-        params.win_batchSize,
-        params.lose_batchSize,
+        WIN_BATCH_SIZE,
+        LOSE_BATCH_SIZE,
     )
     # turn games into aml relations
     pbatch = []
