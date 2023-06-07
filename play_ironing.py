@@ -209,6 +209,40 @@ cOrange = "\u001b[33m"
 cGreen = "\u001b[36m"
 cReset = "\u001b[0m"
 
+"""
+# Coordinate Systems for `.csv` and `print(numpy)`
+
+X points down (rows); Y points right (columns); Z would point outwards.
+
+*--> Y (columns)
+|
+v
+X (rows)
+"""
+UP = 0
+UP_RIGHT = 1
+RIGHT = 2
+DOWN_RIGHT = 3
+DOWN = 4
+DOWN_LEFT = 5
+LEFT = 6
+UP_LEFT = 7
+
+SIM_PERIOD_MS = 500.0
+
+env = gym.make(
+    "gymnasium_playground/FakeIroning-v0",
+    render_mode=None,  # "human", "text", None
+    inFileStr="map1-ironing.csv",
+    initX=2,
+    initY=2,
+    # goalX=7,
+    # goalY=2,
+)
+
+# Constants
+create_constants(env, cmanager)
+
 def generateLine(env):
     observations = []
     actions = []
@@ -246,39 +280,6 @@ def generate_examples(env, pBatchSize, nBatchSize):
                 lose_examples.append(line)
     return win_examples, lose_examples
 
-"""
-# Coordinate Systems for `.csv` and `print(numpy)`
-
-X points down (rows); Y points right (columns); Z would point outwards.
-
-*--> Y (columns)
-|
-v
-X (rows)
-"""
-UP = 0
-UP_RIGHT = 1
-RIGHT = 2
-DOWN_RIGHT = 3
-DOWN = 4
-DOWN_LEFT = 5
-LEFT = 6
-UP_LEFT = 7
-
-SIM_PERIOD_MS = 500.0
-
-env = gym.make(
-    "gymnasium_playground/FakeIroning-v0",
-    render_mode=None,  # "human", "text", None
-    inFileStr="map1-ironing.csv",
-    initX=2,
-    initY=2,
-    # goalX=7,
-    # goalY=2,
-)
-
-# Constants
-create_constants(env, cmanager)
 
 for i in range(NUM_ITER_TRAINING):
     print("<Generating training set", end="", flush=True)
