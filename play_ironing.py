@@ -23,175 +23,178 @@ class ConstantsIndices:
         self.goal = None
         self.ctx = set()
 
-def create_constants(env, cmanager):
-    cmanager.constants_indices = ConstantsIndices()
+class Solver:
 
-    c_actions = []
-    if isinstance(env.action_space, gym.spaces.discrete.Discrete):
-        for ac in range(env.action_space.n):
-            c = alg.cmanager.setNewConstantIndexWithName("A[{ac}]")
-            c_actions.append(c)
+    def __init__(self):
+        self.alg = sc.embedder()
+        self.batchLearner = ql.batchLearner(self.alg)
 
-    c_observations = []
-    if isinstance(env.observation_space, gym.spaces.box.Box):
-        for _ in range(len(env.observation_space.low)):
-            c1 = alg.cmanager.setNewChainIndex()  # up
-            c2 = alg.cmanager.setNewChainIndex()  # down
-            c_observations.append([c1, c2])
+        self.batchLearner.useReduceIndicators = True
+        self.batchLearner.enforceTraceConstraints = True
+        self.batchLearner.byQuotient = False
+        self.batchLearner.storePositives = True
 
-    c1 = alg.cmanager.setNewConstantIndexWithName("win")
-    c2 = alg.cmanager.setNewConstantIndexWithName("lose")
-    c_goal = {"win": c1, "lose": c2}
+        self.batchLearner.alg.verbose = False
+        self.batchLearner.verbose = False
 
-    cmanager.constants_indices.observations = c_observations
-    cmanager.constants_indices.actions = c_actions
-    cmanager.constants_indices.goal = c_goal
+        self.cmanager = self.alg.cmanager
 
-def LCS(param, cmanager):
-    if sc.LCSegment == sc.LCSegment_impl_wChains:
-        return sc.LCSegment(param, cmanager)
-    else:
-        return sc.LCSegment(param)
+    def create_constants(self, env):
+        self.cmanager.constants_indices = ConstantsIndices()
 
-def example_to_relations(example, cmanager):
-    pos_rels = []
-    neg_rels = []
+        c_actions = []
+        if isinstance(env.action_space, gym.spaces.discrete.Discrete):
+            for ac in range(env.action_space.n):
+                c = self.cmanager.setNewConstantIndexWithName("A[{ac}]")
+                c_actions.append(c)
 
-    constants_observations = cmanager.constants_indices.observations
-    constants_actions = cmanager.constants_indices.actions
-    constants_goal = cmanager.constants_indices.goal
+        c_observations = []
+        if isinstance(env.observation_space, gym.spaces.box.Box):
+            for _ in range(len(env.observation_space.low)):
+                c1 = self.cmanager.setNewChainIndex()  # up
+                c2 = self.cmanager.setNewChainIndex()  # down
+                c_observations.append([c1, c2])
 
-    ctx_game = cmanager.setNewConstantIndex()
-    cmanager.constants_indices.ctx.add(ctx_game)
+        c1 = self.cmanager.setNewConstantIndexWithName("win")
+        c2 = self.cmanager.setNewConstantIndexWithName("lose")
+        c_goal = {"win": c1, "lose": c2}
 
-    observations, actions, goal = example
-    for obs, a in zip(observations, actions):
-        ctx_move = cmanager.setNewConstantIndex()
-        cmanager.constants_indices.ctx.add(ctx_move)
+        self.cmanager.constants_indices.observations = c_observations
+        self.cmanager.constants_indices.actions = c_actions
+        self.cmanager.constants_indices.goal = c_goal
 
-        # action < move + ctx_move
-        term_left = [(constants_actions[a])]
-        term_right = [(ctx_move)]
-        for ch, ob in enumerate(obs):
-            term_right.append((constants_observations[ch][0], ob))
-            term_right.append((constants_observations[ch][1], -ob))
+    def LCS(self, param):
+        if sc.LCSegment == sc.LCSegment_impl_wChains:
+            return sc.LCSegment(param, self.cmanager)
+        else:
+            return sc.LCSegment(param)
 
-        pos_rels.append(
-            sc.relation(
-                LCS(term_left, cmanager),
-                LCS(term_right, cmanager),
-                True,
-                alg.generation,
-                region=1,
-            )
-        )
+    def example_to_relations(self, example):
+        pos_rels = []
+        neg_rels = []
 
-        # !action !< move + ctx_move
-        constants_not_actions = constants_actions.copy()
-        constants_not_actions.remove(constants_actions[a])
-        for not_action in constants_not_actions:
-            term_left = [(not_action)]
-            neg_rels.append(
+        constants_observations = self.cmanager.constants_indices.observations
+        constants_actions = self.cmanager.constants_indices.actions
+        constants_goal = self.cmanager.constants_indices.goal
+
+        ctx_game = self.cmanager.setNewConstantIndex()
+        self.cmanager.constants_indices.ctx.add(ctx_game)
+
+        observations, actions, goal = example
+        for obs, a in zip(observations, actions):
+            ctx_move = self.cmanager.setNewConstantIndex()
+            self.cmanager.constants_indices.ctx.add(ctx_move)
+
+            # action < move + ctx_move
+            term_left = [(constants_actions[a])]
+            term_right = [(ctx_move)]
+            for ch, ob in enumerate(obs):
+                term_right.append((constants_observations[ch][0], ob))
+                term_right.append((constants_observations[ch][1], -ob))
+
+            pos_rels.append(
                 sc.relation(
-                    LCS(term_left, cmanager),
-                    LCS(term_right, cmanager),
-                    False,
-                    alg.generation,
+                    self.LCS(term_left),
+                    self.LCS(term_right),
+                    True,
+                    self.alg.generation,
                     region=1,
                 )
             )
 
-        # ctx_game < ctx_move
+            # !action !< move + ctx_move
+            constants_not_actions = constants_actions.copy()
+            constants_not_actions.remove(constants_actions[a])
+            for not_action in constants_not_actions:
+                term_left = [(not_action)]
+                neg_rels.append(
+                    sc.relation(
+                        self.LCS(term_left),
+                        self.LCS(term_right),
+                        False,
+                        self.alg.generation,
+                        region=1,
+                    )
+                )
+
+            # ctx_game < ctx_move
+            pos_rels.append(
+                sc.relation(
+                    self.LCS([(ctx_game)]),
+                    self.LCS([(ctx_move)]),
+                    True,
+                    self.alg.generation,
+                    region=1,
+                )
+            )
+
+        # goal < ctx_game
+        if goal:
+            c_goal = constants_goal["win"]
+            c_not_goal = constants_goal["lose"]
+        else:
+            c_goal = constants_goal["lose"]
+            c_not_goal = constants_goal["win"]
         pos_rels.append(
             sc.relation(
-                LCS([(ctx_game)], cmanager),
-                LCS([(ctx_move)], cmanager),
+                self.LCS([(c_goal)]),
+                self.LCS([(ctx_game)]),
                 True,
-                alg.generation,
+                self.alg.generation,
+                region=1,
+            )
+        )
+        # !goal !< ctx_game
+        neg_rels.append(
+            sc.relation(
+                self.LCS([(c_not_goal)]),
+                self.LCS([(ctx_game)]),
+                False,
+                self.alg.generation,
                 region=1,
             )
         )
 
-    # goal < ctx_game
-    if goal:
-        c_goal = constants_goal["win"]
-        c_not_goal = constants_goal["lose"]
-    else:
-        c_goal = constants_goal["lose"]
-        c_not_goal = constants_goal["win"]
-    pos_rels.append(
-        sc.relation(
-            LCS([(c_goal)], cmanager),
-            LCS([(ctx_game)], cmanager),
-            True,
-            alg.generation,
-            region=1,
-        )
-    )
-    # !goal !< ctx_game
-    neg_rels.append(
-        sc.relation(
-            LCS([(c_not_goal)], cmanager),
-            LCS([(ctx_game)], cmanager),
-            False,
-            alg.generation,
-            region=1,
-        )
-    )
+        return pos_rels, neg_rels
 
-    return pos_rels, neg_rels
+    def test(alg, las, env):
+        constants_observations = alg.cmanager.constants_indices.observations
+        constants_goal_win = alg.cmanager.constants_indices.goal["win"]
+        all_moves = []
 
-def test(alg, las, env):
-    constants_observations = alg.cmanager.constants_indices.observations
-    constants_goal_win = alg.cmanager.constants_indices.goal["win"]
-    all_moves = []
+        obs, _ = env.reset()
 
-    obs, _ = env.reset()
+        for _ in range(MAX_STEPS):
+            # Calc next move
+            bTerm = set()
+            for ch, ob in enumerate(obs):
+                bTerm.add(
+                    alg.cmanager.getConstantInChain(constants_observations[ch][0], ob)
+                )
+                bTerm.add(
+                    alg.cmanager.getConstantInChain(constants_observations[ch][1], -ob)
+                )
 
-    for _ in range(MAX_STEPS):
-        # Calc next move
-        bTerm = set()
-        for ch, ob in enumerate(obs):
-            bTerm.add(
-                alg.cmanager.getConstantInChain(constants_observations[ch][0], ob)
-            )
-            bTerm.add(
-                alg.cmanager.getConstantInChain(constants_observations[ch][1], -ob)
-            )
+            bTermAtoms = set()
+            for c in bTerm:
+                bTermAtoms |= las[c]
 
-        bTermAtoms = set()
-        for c in bTerm:
-            bTermAtoms |= las[c]
+            actions = alg.cmanager.constants_indices.actions
+            actions_dis = []
+            for a in actions:
+                actions_dis.append([a, las[a] - bTermAtoms])
+            random.shuffle(actions_dis)
+            actions_dis.sort(key=lambda pair: len(pair[1]))
+            next_move = actions_dis[0][0]
+            all_moves.append(next_move)
 
-        actions = alg.cmanager.constants_indices.actions
-        actions_dis = []
-        for a in actions:
-            actions_dis.append([a, las[a] - bTermAtoms])
-        random.shuffle(actions_dis)
-        actions_dis.sort(key=lambda pair: len(pair[1]))
-        next_move = actions_dis[0][0]
-        all_moves.append(next_move)
+            # Step
+            obs, reward, terminated, _, _ = env.step(next_move)
 
-        # Step
-        obs, reward, terminated, _, _ = env.step(next_move)
+            if terminated:
+                break
 
-        if terminated:
-            break
-
-    return reward > 0.5, all_moves
-
-alg = sc.embedder()
-batchLearner = ql.batchLearner(alg)
-
-batchLearner.useReduceIndicators = True
-batchLearner.enforceTraceConstraints = True
-batchLearner.byQuotient = False
-batchLearner.storePositives = True
-
-batchLearner.alg.verbose = False
-batchLearner.verbose = False
-
-cmanager = alg.cmanager
+        return reward > 0.5, all_moves
 
 """
 # Coordinate Systems for `.csv` and `print(numpy)`
@@ -225,7 +228,8 @@ env = gym.make(
 )
 
 # Constants
-create_constants(env, cmanager)
+solver = Solver()
+solver.create_constants(env)
 
 cOrange = "\u001b[33m"
 cGreen = "\u001b[36m"
@@ -280,32 +284,32 @@ for i in range(NUM_ITER_TRAINING):
     pbatch = []
     nbatch = []
     for ex in win_batch:
-        prels, nrels = example_to_relations(ex, cmanager)
+        prels, nrels = solver.example_to_relations(ex)
         pbatch.extend(prels)
         nbatch.extend(nrels)
     print(">")
 
-    batchLearner.enforce(pbatch, nbatch)
+    solver.batchLearner.enforce(pbatch, nbatch)
 
     print(
         f"{cOrange}BATCH#: {i}{cReset}",
-        f"seen ({batchLearner.pcount}, {batchLearner.ncount})",
-        f"Generation: {alg.generation}",
-        f"Reserve size: {len(batchLearner.reserve)}",
+        f"seen ({solver.batchLearner.pcount}, {solver.batchLearner.ncount})",
+        f"Generation: {solver.alg.generation}",
+        f"Reserve size: {len(solver.batchLearner.reserve)}",
     )
 
     # Test
     if (i + 1) % TEST_EVERY == 0:
-        target = batchLearner.reserve
+        target = solver.batchLearner.reserve
         allConstants = sc.CSegment(
-            cmanager.getConstantSet().constants - cmanager.constants_indices.ctx
+            solver.cmanager.getConstantSet().constants - solver.cmanager.constants_indices.ctx
         )
         las = ql.calculateLowerAtomicSegment(target, allConstants, True)
 
         count_win = 0
         count_lose = 0
         for _ in range(NUM_TESTS):
-            res, all_moves = test(alg, las, env)
+            res, all_moves = solver.test(alg, las, env)
             if res:
                 count_win += 1
             else:
@@ -315,7 +319,7 @@ for i in range(NUM_ITER_TRAINING):
 
     # Reserve Update
     print("<Updating reserve...", end="", flush=True)
-    cmanager.updateConstantsTo(
-        alg.atomization, batchLearner.reserve, alg.exampleSet
+    solver.cmanager.updateConstantsTo(
+        solver.alg.atomization, solver.batchLearner.reserve, solver.alg.exampleSet
     )
     print(">")
