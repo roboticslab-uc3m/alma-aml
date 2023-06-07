@@ -157,9 +157,9 @@ class Solver:
 
         return pos_rels, neg_rels
 
-    def test(alg, las, env):
-        constants_observations = alg.cmanager.constants_indices.observations
-        constants_goal_win = alg.cmanager.constants_indices.goal["win"]
+    def test(self, las, env):
+        constants_observations = self.cmanager.constants_indices.observations
+        constants_goal_win = self.cmanager.constants_indices.goal["win"]
         all_moves = []
 
         obs, _ = env.reset()
@@ -169,17 +169,17 @@ class Solver:
             bTerm = set()
             for ch, ob in enumerate(obs):
                 bTerm.add(
-                    alg.cmanager.getConstantInChain(constants_observations[ch][0], ob)
+                    self.cmanager.getConstantInChain(constants_observations[ch][0], ob)
                 )
                 bTerm.add(
-                    alg.cmanager.getConstantInChain(constants_observations[ch][1], -ob)
+                    self.cmanager.getConstantInChain(constants_observations[ch][1], -ob)
                 )
 
             bTermAtoms = set()
             for c in bTerm:
                 bTermAtoms |= las[c]
 
-            actions = alg.cmanager.constants_indices.actions
+            actions = self.cmanager.constants_indices.actions
             actions_dis = []
             for a in actions:
                 actions_dis.append([a, las[a] - bTermAtoms])
@@ -309,7 +309,7 @@ for i in range(NUM_ITER_TRAINING):
         count_win = 0
         count_lose = 0
         for _ in range(NUM_TESTS):
-            res, all_moves = solver.test(alg, las, env)
+            res, all_moves = solver.test(las, env)
             if res:
                 count_win += 1
             else:
