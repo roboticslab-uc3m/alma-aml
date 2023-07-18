@@ -8,7 +8,7 @@ cOrange = "\u001b[33m"
 cGreen = "\u001b[36m"
 cReset = "\u001b[0m"
 
-NUM_ITER_TRAINING = 1 # 10
+NUM_ITER_TRAINING = 10
 
 
 class Solver:
@@ -101,13 +101,22 @@ class Solver:
                                for idx in at.ucs.isolatedConstants])
             print(f"  {{{ucs_str}}} - {at.ucs.isolatedConstants}")
 
+        # Reserve Update
+        self.cmanager.updateConstantsTo(self.alg.atomization, self.batchLearner.reserve, self.alg.exampleSet) # fmt:skip
+
+
     def predict(self, l):
+        lconst = self.toConstant(l)
+
         # Get all constants used in the test set
         allConstants = sc.CSegment(self.alg.cmanager.getConstantSet().constants)
         # Precompute atoms in every constant (since the atoms in a term is equal to the union of atoms in the term's constants)
         las = ql.calculateLowerAtomicSegment(self.batchLearner.reserve, allConstants, True)  # fmt:skip
-        print("here!")
 
+        # HELP ME! (not sure if above code is required, nor how to do from here...)
+        prediction = 3 # just hard-coded to R1 for now...
+
+        return self.cname[prediction]
 
 if __name__ == "__main__":
     solver = Solver()
@@ -136,6 +145,8 @@ if __name__ == "__main__":
 
         solver.train(pbatch, nbatch)
 
-        solver.predict("L1")
+        print("L1: ", solver.predict("L1"))
+        print("L2: ", solver.predict("L2"))
+        print("L3: ", solver.predict("L3"))
 
     print("done!")
