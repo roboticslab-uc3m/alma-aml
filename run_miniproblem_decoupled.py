@@ -66,10 +66,10 @@ class Solver:
         )
 
     def train(self, examples, counterexamples):
-        pbatch = [self.PosRel(L, R) for L, R in examples]
-        nbatch = [self.NegRel(L, R) for L, R in counterexamples]
+        self.pbatch = [self.PosRel(L, R) for L, R in examples]
+        self.nbatch = [self.NegRel(L, R) for L, R in counterexamples]
 
-        self.batchLearner.enforce(pbatch, nbatch)
+        self.batchLearner.enforce(self.pbatch, self.nbatch)
 
         print(f"{cOrange}BATCH#: {self.i}{cReset}")
         self.i += 1
@@ -78,12 +78,12 @@ class Solver:
         print(f"Union model size: {len(self.batchLearner.reserve)}")
 
         print("Relations in this batch")
-        for rel in pbatch:
+        for rel in self.pbatch:
             L_str = " ".join([self.cname[idx] for idx in rel.L])
             H_str = " ".join([self.cname[idx] for idx in rel.H])
             print(
                 f"  {{{L_str}}} < {{{H_str}}} - {rel.L.constants} < {rel.H.constants}")
-        for rel in nbatch:
+        for rel in self.nbatch:
             L_str = " ".join([self.cname[idx] for idx in rel.L])
             H_str = " ".join([self.cname[idx] for idx in rel.H])
             print(
@@ -100,6 +100,13 @@ class Solver:
             ucs_str = " ".join([self.cname[idx]
                                for idx in at.ucs.isolatedConstants])
             print(f"  {{{ucs_str}}} - {at.ucs.isolatedConstants}")
+
+    def predict(self, l):
+        # Get all constants used in the test set
+        allConstants = sc.CSegment(self.alg.cmanager.getConstantSet().constants)
+        # Precompute atoms in every constant (since the atoms in a term is equal to the union of atoms in the term's constants)
+        las = ql.calculateLowerAtomicSegment(self.batchLearner.reserve, allConstants, True)  # fmt:skip
+        print("here!")
 
 
 if __name__ == "__main__":
@@ -128,5 +135,7 @@ if __name__ == "__main__":
         nbatch = random.sample(counterexamples, num_counterexamples_per_batch)
 
         solver.train(pbatch, nbatch)
+
+        solver.predict("L1")
 
     print("done!")
