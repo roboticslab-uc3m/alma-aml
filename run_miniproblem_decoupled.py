@@ -8,7 +8,7 @@ cOrange = "\u001b[33m"
 cGreen = "\u001b[36m"
 cReset = "\u001b[0m"
 
-NUM_ITER_TRAINING = 10
+NUM_ITER_TRAINING = 1 # 10
 
 
 class Solver:
