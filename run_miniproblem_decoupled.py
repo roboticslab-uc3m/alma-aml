@@ -101,7 +101,7 @@ class Solver:
                                for idx in at.ucs.isolatedConstants])
             print(f"  {{{ucs_str}}} - {at.ucs.isolatedConstants}")
 
-        # Reserve Update
+        # Reserve Update # PLEASE HELP ME! (is this best placed here?)
         self.cmanager.updateConstantsTo(self.alg.atomization, self.batchLearner.reserve, self.alg.exampleSet) # fmt:skip
 
 
@@ -113,7 +113,7 @@ class Solver:
         # Precompute atoms in every constant (since the atoms in a term is equal to the union of atoms in the term's constants)
         las = ql.calculateLowerAtomicSegment(self.batchLearner.reserve, allConstants, True)  # fmt:skip
 
-        # HELP ME! (not sure if above code is required, nor how to do from here...)
+        # PLEASE HELP ME! (not sure if above code is required, nor how to do from here...)
         prediction = 3 # just hard-coded to R1 for now...
 
         return self.cname[prediction]
