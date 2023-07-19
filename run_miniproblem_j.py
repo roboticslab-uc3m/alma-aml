@@ -12,9 +12,7 @@ NUM_ITER_TRAINING = 10
 
 
 class Solver:
-
     def __init__(self):
-
         useReduceIndicators = True
         byQuotient = False
 
@@ -41,8 +39,7 @@ class Solver:
         self.R2 = self.cmanager.setNewConstantIndexWithName("R2")
         self.R3 = self.cmanager.setNewConstantIndexWithName("R3")
         # Dictionary index -> name
-        self.cname = {idx: name for name,
-                      idx in self.cmanager.definedWithName.items()}
+        self.cname = {idx: name for name, idx in self.cmanager.definedWithName.items()}
 
     def toConstant(self, elem):
         return self.cmanager.definedWithName[elem]
@@ -82,41 +79,44 @@ class Solver:
             L_str = " ".join([self.cname[idx] for idx in rel.L])
             H_str = " ".join([self.cname[idx] for idx in rel.H])
             print(
-                f"  {{{L_str}}} < {{{H_str}}} - {rel.L.constants} < {rel.H.constants}")
+                f"  {{{L_str}}} < {{{H_str}}} - {rel.L.constants} < {rel.H.constants}"
+            )
         for rel in self.nbatch:
             L_str = " ".join([self.cname[idx] for idx in rel.L])
             H_str = " ".join([self.cname[idx] for idx in rel.H])
             print(
-                f"  {{{L_str}}} !< {{{H_str}}} - {rel.L.constants} !< {rel.H.constants}")
+                f"  {{{L_str}}} !< {{{H_str}}} - {rel.L.constants} !< {rel.H.constants}"
+            )
 
         print("Atoms in this batch's model")
         for at in self.alg.atomization:
-            ucs_str = " ".join([self.cname[idx]
-                               for idx in at.ucs.isolatedConstants])
+            ucs_str = " ".join([self.cname[idx] for idx in at.ucs.isolatedConstants])
             print(f"  {{{ucs_str}}} - {at.ucs.isolatedConstants}")
 
         print("Atoms in union model")
         for at in self.batchLearner.reserve:
-            ucs_str = " ".join([self.cname[idx]
-                               for idx in at.ucs.isolatedConstants])
+            ucs_str = " ".join([self.cname[idx] for idx in at.ucs.isolatedConstants])
             print(f"  {{{ucs_str}}} - {at.ucs.isolatedConstants}")
 
-        # Reserve Update # PLEASE HELP ME! (is this best placed here?)
-        self.cmanager.updateConstantsTo(self.alg.atomization, self.batchLearner.reserve, self.alg.exampleSet) # fmt:skip
+        # Reserve Update (This has no effect on this particular problem)
+        # self.cmanager.updateConstantsTo(self.alg.atomization, self.batchLearner.reserve, self.alg.exampleSet)  # fmt:skip
 
+    def predict(self, questions):
+        allConstants = set()
+        for L, R in questions:
+            allConstants.add(self.toConstant(L))
+            allConstants.add(self.toConstant(R))
+        allConstants = sc.CSegment(allConstants)
 
-    def predict(self, l):
-        lconst = self.toConstant(l)
-
-        # Get all constants used in the test set
-        allConstants = sc.CSegment(self.alg.cmanager.getConstantSet().constants)
-        # Precompute atoms in every constant (since the atoms in a term is equal to the union of atoms in the term's constants)
         las = ql.calculateLowerAtomicSegment(self.batchLearner.reserve, allConstants, True)  # fmt:skip
+        disc = []
+        for L, R in questions:
+            l_const = self.toConstant(L)
+            r_const = self.toConstant(R)
+            disc.append(len(las.get(l_const, set()) - las.get(r_const, set())))
 
-        # PLEASE HELP ME! (not sure if above code is required, nor how to do from here...)
-        prediction = 3 # just hard-coded to R1 for now...
+        return disc
 
-        return self.cname[prediction]
 
 if __name__ == "__main__":
     solver = Solver()
@@ -136,7 +136,6 @@ if __name__ == "__main__":
     ]
 
     for i in range(NUM_ITER_TRAINING):
-
         num_examples_per_batch = 1
         num_counterexamples_per_batch = 2
 
@@ -145,8 +144,25 @@ if __name__ == "__main__":
 
         solver.train(pbatch, nbatch)
 
-        print("L1: ", solver.predict("L1"))
-        print("L2: ", solver.predict("L2"))
-        print("L3: ", solver.predict("L3"))
+        # Questions for our model
+        questions_L1 = [
+            ("L1", "R1"),
+            ("L1", "R2"),
+            ("L1", "R3"),
+        ]
+        questions_L2 = [
+            ("L2", "R1"),
+            ("L2", "R2"),
+            ("L2", "R3"),
+        ]
+        questions_L3 = [
+            ("L3", "R1"),
+            ("L3", "R2"),
+            ("L3", "R3"),
+        ]
+
+        print("L1: ", solver.predict(questions_L1))
+        print("L2: ", solver.predict(questions_L2))
+        print("L3: ", solver.predict(questions_L3))
 
     print("done!")
