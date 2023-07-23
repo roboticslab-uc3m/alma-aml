@@ -2,7 +2,12 @@
 
 Copy `aml` from `compiled_aml` here to run.
 
-Working setup on Ubuntu 22.04.1 LTS with Python 3.10.6.
+Requisites from `aml`, working setup with:
+- Ubuntu 22.04.1 LTS (possibly requires libgomp1)
+- Python 3.10.6 (possibly requires cffi)
+- OpenSSL
+  - libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
+  - libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
 
 ## Docker
 
