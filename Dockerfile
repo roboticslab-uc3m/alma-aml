@@ -1,6 +1,7 @@
 FROM cielavenir/openrave:jammy
 
 ARG SSL_DEBFILE="libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb"
+ARG DEBIAN_FRONTEND="noninteractive"
 
 RUN apt update && \
     apt-get install -y --no-install-recommends \
