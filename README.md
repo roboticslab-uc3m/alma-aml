@@ -14,13 +14,13 @@ docker build -t alma-openrave -f ./Dockerfile .
 
 Run via Rocker:
 
-- Con NVIDIA:
+- With NVIDIA:
 
 ```bash
 rocker --home --user --nvidia --x11 --privileged alma-openrave /bin/bash
 ```
 
-- Con intel integrated graphics support:
+- With intel integrated graphics support:
 
 
 ```bash
