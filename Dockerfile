@@ -5,6 +5,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 ARG YCM="0.15.3"
 ARG YARP="3.7.2"
 ARG OYP="0.1.0"
+ARG TOM="0.1.0"
 ARG TCF="0.1.0"
 
 RUN apt update \
@@ -27,6 +28,10 @@ RUN apt update \
     && tar -xzvf v$OYP.tar.gz \
     && mkdir -p openrave-yarp-plugins-$OYP/build && cd openrave-yarp-plugins-$OYP/build && cmake .. \
     && make -j$(nproc) && make install && cd ../.. && rm v$OYP.tar.gz \
+    && wget -q https://github.com/roboticslab-uc3m/teo-openrave-models/archive/refs/tags/v$TOM.tar.gz \
+    && tar -xzvf v$TOM.tar.gz \
+    && mkdir -p teo-openrave-models-$TOM/build && cd teo-openrave-models-$TOM/build && cmake .. \
+    && make -j$(nproc) && make install && cd ../.. && rm v$TOM.tar.gz \
     && wget -q https://github.com/roboticslab-uc3m/teo-configuration-files/archive/refs/tags/v$TCF.tar.gz \
     && tar -xzvf v$TCF.tar.gz \
     && mkdir -p teo-configuration-files-$TCF/build && cd teo-configuration-files-$TCF/build && cmake .. \
