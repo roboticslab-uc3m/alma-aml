@@ -4,6 +4,7 @@ ARG SSL_DEBFILE="libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb"
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG YCM="0.15.3"
 ARG YARP="3.7.2"
+ARG OYP="0.1.0"
 
 RUN apt update \
     && apt install -y --no-install-recommends \
@@ -20,4 +21,8 @@ RUN apt update \
     && mkdir -p yarp-$YARP/build && cd yarp-$YARP/build \
     && cmake .. -DSKIP_ACE=ON \
         -DYARP_COMPILE_BINDINGS=ON -DCREATE_PYTHON=ON -DCMAKE_INSTALL_PYTHON3DIR=/usr/local/lib/python3.10/dist-packages \
+    && make -j$(nproc) && make install && cd ../.. \
+    && wget -q https://github.com/roboticslab-uc3m/openrave-yarp-plugins/archive/refs/tags/v$OYP.tar.gz \
+    && tar -xzvf v$OYP.tar.gz \
+    && mkdir -p openrave-yarp-plugins-$OYP/build && cd openrave-yarp-plugins-$OYP/build && cmake .. \
     && make -j$(nproc) && make install && cd ../..
