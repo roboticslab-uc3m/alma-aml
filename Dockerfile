@@ -44,5 +44,6 @@ RUN apt update \
     && make -j$(nproc) && make install && cd ../../.. && rm v$OROCOS_KINEMATICS_DYNAMICS.tar.gz \
     && wget -q https://github.com/roboticslab-uc3m/kinematics-dynamics/archive/refs/tags/v$KINEMATICS_DYNAMICS.tar.gz \
     && tar -xzf v$KINEMATICS_DYNAMICS.tar.gz \
-    && mkdir -p kinematics-dynamics-$KINEMATICS_DYNAMICS/build && cd kinematics-dynamics-$KINEMATICS_DYNAMICS/build && cmake .. \
+    && mkdir -p kinematics-dynamics-$KINEMATICS_DYNAMICS/build && cd kinematics-dynamics-$KINEMATICS_DYNAMICS/build \
+    && cmake .. -DCREATE_PYTHON=ON -DCREATE_BINDINGS_PYTHON=ON -DCMAKE_INSTALL_PYTHONDIR=/usr/local/lib/python3.10/dist-packages \
     && make -j$(nproc) && make install && cd ../.. && rm v$KINEMATICS_DYNAMICS.tar.gz
