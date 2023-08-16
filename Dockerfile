@@ -7,6 +7,8 @@ ARG YARP="3.7.2"
 ARG OYP="0.1.0"
 ARG TOM="0.1.0"
 ARG TCF="0.1.0"
+ARG OKD="1.5.1"
+ARG KD="0.1.0"
 
 RUN apt update \
     && apt install -y --no-install-recommends \
@@ -35,4 +37,12 @@ RUN apt update \
     && wget -q https://github.com/roboticslab-uc3m/teo-configuration-files/archive/refs/tags/v$TCF.tar.gz \
     && tar -xzvf v$TCF.tar.gz \
     && mkdir -p teo-configuration-files-$TCF/build && cd teo-configuration-files-$TCF/build && cmake .. \
-    && make -j$(nproc) && make install && cd ../.. && rm v$TCF.tar.gz
+    && make -j$(nproc) && make install && cd ../.. && rm v$TCF.tar.gz \
+    && wget -q https://github.com/orocos/orocos_kinematics_dynamics/archive/refs/tags/v$OKD.tar.gz \
+    && tar -xzvf v$OKD.tar.gz \
+    && mkdir -p orocos_kinematics_dynamics/-$OKD/build && cd orocos_kinematics_dynamics-$OKD/build && cmake .. \
+    && make -j$(nproc) && make install && cd ../.. && rm v$OKD.tar.gz \
+    && wget -q https://github.com/roboticslab-uc3m/kinematics-dynamics/archive/refs/tags/v$KD.tar.gz \
+    && tar -xzvf v$KD.tar.gz \
+    && mkdir -p kinematics-dynamics-$KD/build && cd kinematics-dynamics-$KD/build && cmake .. \
+    && make -j$(nproc) && make install && cd ../.. && rm v$KD.tar.gz
