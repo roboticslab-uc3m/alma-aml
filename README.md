@@ -3,7 +3,7 @@
 Copy `aml` from `compiled_aml` here to run.
 
 Requisites from `aml`, working setup with:
-- Ubuntu 22.04.1 LTS (possibly requires libgomp1)
+- Ubuntu 22.04.1 LTS and Ubuntu 22.04.2 LTS (possibly requires libgomp1)
 - Python 3.10.6 (possibly requires cffi)
 - OpenSSL
   - libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
