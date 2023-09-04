@@ -8,26 +8,11 @@
     </module>
 
     <module>
-        <name>launchTeoYarp</name>
-        <parameters>--from /usr/local/share/teo/contexts/kinematics/rightArmKinematics-pan45-tilt30.ini --device BasicCartesianControl --angleRepr axisAngle --robot remote_controlboard --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm</parameters>
+        <name>BasicCartesianControl</name>
+        <parameters>--name /teoSim/trunkAndRightArm/CartesianControl --kinematics teo-trunk-rightArm-fetch.ini --ik nrjl --angleRepr axisAngle --robot remotecontrolboardremapper --localPortPrefix /BasicCartesianControl/teoSim/trunkAndRightArm --axesNames "(AxialTrunk FrontalTrunk FrontalRightShoulder SagittalRightShoulder AxialRightShoulder FrontalRightElbow AxialRightWrist FrontalRightWrist)" --remoteControlBoards "(/teoSim/trunk /teoSim/rightArm)"</parameters>
         <node>localhost</node>
+        <deployer>yarpdev</deployer>
     </module>
-
-    <module>
-        <name>ironingMover</name>
-        <parameters>--robot /teoSim --targetForce -0.001 --strategy velocityForce</parameters>
-        <node>localhost</node>
-    </module>
-
-    <connection>
-        <from>/jr3ch3:o</from>
-        <to>/ironingMover/force:i</to>
-    </connection>
-
-    <connection>
-        <from>/traj:o</from>
-        <to>/ironingMover/traj:i</to>
-    </connection>
 
 </application>
 
