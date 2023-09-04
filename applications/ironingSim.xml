@@ -1,0 +1,18 @@
+<application>
+<name>ironingSim App</name>
+
+    <module>
+        <name>openrave</name>
+        <parameters>--module OpenraveYarpPluginLoader "env /home/yo/repos/roboticslab-uc3m/textiles/textiles/ironing/manipulation/ironingSim/ironingSim.env.xml open --device controlBoard_nws_yarp --subdevice YarpOpenraveControlBoard --robotIndex 0 --allManipulators" --module OpenraveYarpWorld --module OpenraveYarpPlanner --viewer qtcoin --collision ode</parameters>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>BasicCartesianControl</name>
+        <parameters>--name /teoSim/trunkAndRightArm/CartesianControl --kinematics teo-trunk-rightArm-fetch.ini --ik nrjl --angleRepr axisAngle --robot remotecontrolboardremapper --localPortPrefix /BasicCartesianControl/teoSim/trunkAndRightArm --axesNames "(AxialTrunk FrontalTrunk FrontalRightShoulder SagittalRightShoulder AxialRightShoulder FrontalRightElbow AxialRightWrist FrontalRightWrist)" --remoteControlBoards "(/teoSim/trunk /teoSim/rightArm)"</parameters>
+        <node>localhost</node>
+        <deployer>yarpdev</deployer>
+    </module>
+
+</application>
+
