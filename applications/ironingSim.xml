@@ -3,7 +3,7 @@
 
     <module>
         <name>openrave</name>
-        <parameters>--module OpenraveYarpPluginLoader "env /home/yo/repos/roboticslab-uc3m/textiles/textiles/ironing/manipulation/ironingSim/ironingSim.env.xml open --device controlBoard_nws_yarp --subdevice YarpOpenraveControlBoard --robotIndex 0 --allManipulators" --module OpenraveYarpWorld --module OpenraveYarpPlanner --module OpenraveYarpIroning --viewer qtcoin --collision ode</parameters>
+        <parameters>/home/yo/repos/roboticslab-uc3m/textiles/textiles/ironing/manipulation/ironingSim/ironingSim.env.xml --module OpenraveYarpPluginLoader "open --device controlBoard_nws_yarp --subdevice YarpOpenraveControlBoard --robotIndex 0 --allManipulators" --module OpenraveYarpWorld --module OpenraveYarpPlanner --module OpenraveYarpIroning --viewer qtcoin --collision ode</parameters>
         <node>localhost</node>
     </module>
 
