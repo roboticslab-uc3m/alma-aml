@@ -9,7 +9,7 @@
 
     <module>
         <name>BasicCartesianControl</name>
-        <parameters>--name /teoSim/rightArm/CartesianControl --kinematics teo-fixedTrunk-rightArm-fetch.ini --ik st --angleRepr axisAngle --local /BasicCartesianControl/teoSim/rightArm --remote /teoSim/rightArm</parameters>
+        <parameters>--name /teoSim/trunkAndRightArm/CartesianControl --kinematics teo-trunk-rightArm-fetch.ini --ik nrjl --angleRepr axisAngle --robot remotecontrolboardremapper --localPortPrefix /BasicCartesianControl/teoSim/trunkAndRightArm --axesNames "(AxialTrunk FrontalTrunk FrontalRightShoulder SagittalRightShoulder AxialRightShoulder FrontalRightElbow AxialRightWrist FrontalRightWrist)" --remoteControlBoards "(/teoSim/trunk /teoSim/rightArm)"</parameters>
         <node>localhost</node>
         <deployer>yarpdev</deployer>
     </module>
