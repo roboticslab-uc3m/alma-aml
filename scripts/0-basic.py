@@ -1,19 +1,21 @@
 from time import sleep
 
+import yarp
+import roboticslab_kinematics_dynamics as kd
+
 DEFAULT_HEAD_PAN = -45.0
 DEFAULT_HEAD_TILT = 0.0
 
 DEFAULT_TRUNK_PAN = 45.0
 DEFAULT_TRUNK_TILT = 30.0
 
-# YARP
-import yarp
+#-- Prepare YARP
 yarp.Network.init()
 if not yarp.Network.checkNetwork():
     print('[error] Please try running yarp server')
     quit()
 
-#-- Head (H)
+#-- Prepare Head (H)
 optionsH = yarp.Property()
 optionsH.put('device','remote_controlboard')
 optionsH.put('remote','/teoSim/head')
@@ -24,7 +26,7 @@ if not ddH.isValid():
     quit()
 posH = ddH.viewIPositionControl()
 
-#-- Trunk (T)
+#-- Prepare Trunk (T)
 optionsT = yarp.Property()
 optionsT.put('device','remote_controlboard')
 optionsT.put('remote','/teoSim/trunk')
@@ -35,7 +37,7 @@ if not ddT.isValid():
     quit()
 posT = ddT.viewIPositionControl()
 
-#-- Right Arm (RA)
+#-- Prepare Right Arm (RA)
 optionsRA = yarp.Property()
 optionsRA.put('device','remote_controlboard')
 optionsRA.put('remote','/teoSim/rightArm')
@@ -47,6 +49,18 @@ if not ddRA.isValid():
 posRA = ddRA.viewIPositionControl()
 axesRA = posRA.getAxes()
 
+#-- Prepare Cartesian Control RA (CCRA)
+optionsCCRA = yarp.Property()
+optionsCCRA.put('device', 'CartesianControlClient')
+optionsCCRA.put('cartesianRemote', '/teoSim/rightArm/CartesianControl')
+optionsCCRA.put('cartesianLocal', '/alma/teoSim/rightArm/CartesianControl')
+ddCCRA = yarp.PolyDriver(optionsCCRA)
+if not ddCCRA.isValid():
+    print('[error] Cannot connect to: /teoSim/rightArm/CartesianControl')
+    quit()
+ccRA = kd.viewICartesianControl(ddCCRA)
+
+#-- Pre-prog
 posT.positionMove(0, DEFAULT_TRUNK_PAN)
 posT.positionMove(1, DEFAULT_TRUNK_TILT)
 
@@ -96,3 +110,8 @@ q[5] = -25.000
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
+
+print('> stat')
+x = yarp.DVector()
+ret, state, ts = ccRA.stat(x)
+print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
