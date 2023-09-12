@@ -68,7 +68,7 @@ posH.positionMove(0, DEFAULT_HEAD_PAN)
 posH.positionMove(1, DEFAULT_HEAD_TILT)
 
 for i in range(axesRA):
-    posRA.setRefSpeed(i, 35)
+    posRA.setRefSpeed(i, 25)
 
 sleep(0.1)
 q = yarp.DVector(axesRA,0.0)
@@ -77,41 +77,39 @@ while not posRA.checkMotionDone():
     sleep(0.1)
 
 q = yarp.DVector(axesRA,0.0)
-q[0] = -40
+q[0] = 40
 q[1] = -30
-q[3] = 30
+q[3] = -30
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
 
 q = yarp.DVector(axesRA,0.0)
-q[0] = -40
+q[0] = 40
 q[1] = -70
-q[3] = 30
+q[3] = -30
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
 
 q = yarp.DVector(axesRA,0.0)
-q[0] = 30
+q[0] = -30
 q[1] = -70
-q[3] = 30
+q[3] = -30
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
 
-"""
 q = yarp.DVector(axesRA,0.0)
-q[0] = 6.860721
+q[0] = -6.860721
 q[1] = -50.268563
 q[2] = 0.00000
-q[3] = 76.61138
+q[3] = -76.61138
 q[4] = 59.0000
 q[5] = -25.000
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
-"""
 
 print('> stat')
 x = yarp.DVector()
@@ -119,9 +117,9 @@ ret, state, ts = ccTRA.stat(x)
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
 
 xds = [
-    [0.21918189477647118, -0.7090359996295917, 0.5, 0.8053611301061854, -1.3063011250514696, 0.5274607060792096],
-    [0.21918189477647118, -0.7090359996295917, 0.4, 0.8053611301061854, -1.3063011250514696, 0.5274607060792096],
-    [0.21918189477647118, -0.7090359996295917, 0.5, 0.8053611301061854, -1.3063011250514696, 0.5274607060792096]
+    [0.7, -0.15, 0.0, -2.228400856579234, 0.39161988930755426, -0.33302764032742066],
+    [0.7, -0.0, 0.0, -2.228400856579234, 0.39161988930755426, -0.33302764032742066],
+    [0.7, 0.15, 0.0, -2.228400856579234, 0.39161988930755426, -0.33302764032742066]
 ]
 
 for i in range(len(xds)):
@@ -129,9 +127,10 @@ for i in range(len(xds)):
     print('-- movement ' + str(i + 1) + ':')
     xd = yarp.DVector(xds[i])
     print('>', '[%s]' % ', '.join(map(str, xd)))
-    if ccTRA.movl(xd):
+    if ccTRA.movj(xd):
         print('< [ok]')
         print('< [wait...]')
+        sleep(0.2)
         ccTRA.wait()
         print('> stat')
         x = yarp.DVector()
@@ -139,3 +138,4 @@ for i in range(len(xds)):
         print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
     else:
         print('< [fail]')
+        quit()
