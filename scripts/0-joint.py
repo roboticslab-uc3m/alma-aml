@@ -89,10 +89,10 @@ while not posRA.checkMotionDone():
 q = yarp.DVector(axesRA,0.0)
 q[0] = 6.860721
 q[1] = -50.268563
-q[2] = -28.792619
+q[2] = 0.00000
 q[3] = 76.61138
-q[4] = 66.813708
-q[5] = -21.894552
+q[4] = 59.0000
+q[5] = -25.000
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
