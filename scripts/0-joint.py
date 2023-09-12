@@ -1,9 +1,25 @@
 import yarp
 
+DEFAULT_HEAD_PAN = -45.0
+DEFAULT_HEAD_TILT = 0.0
+
+DEFAULT_TRUNK_PAN = 45.0
+DEFAULT_TRUNK_TILT = 30.0
+
 yarp.Network.init()
 if not yarp.Network.checkNetwork():
     print('[error] Please try running yarp server')
     quit()
+
+headOptions = yarp.Property()
+headOptions.put('device','remote_controlboard')
+headOptions.put('remote','/teoSim/head')
+headOptions.put('local','/alma/teoSim/head')
+headDd = yarp.PolyDriver(headOptions)
+if not headDd.isValid():
+    print('[error] Cannot connect to: /teoSim/head')
+    quit()
+headPos = headDd.viewIPositionControl()
 
 trunkOptions = yarp.Property()
 trunkOptions.put('device','remote_controlboard')
@@ -25,7 +41,10 @@ if not rightArmDd.isValid():
     quit()
 rightArmPos = rightArmDd.viewIPositionControl()
 
-trunkPos.positionMove(0, 45) # pan
-trunkPos.positionMove(1, 30) # tilt
+trunkPos.positionMove(0, DEFAULT_TRUNK_PAN)
+trunkPos.positionMove(1, DEFAULT_TRUNK_TILT)
+
+headPos.positionMove(0, DEFAULT_HEAD_PAN)
+headPos.positionMove(1, DEFAULT_HEAD_TILT)
 
 rightArmPos.positionMove(3, 90) # elbow
