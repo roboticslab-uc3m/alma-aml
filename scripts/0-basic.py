@@ -100,6 +100,7 @@ posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
 
+"""
 q = yarp.DVector(axesRA,0.0)
 q[0] = 6.860721
 q[1] = -50.268563
@@ -115,3 +116,31 @@ print('> stat')
 x = yarp.DVector()
 ret, state, ts = ccRA.stat(x)
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
+"""
+
+xd = yarp.DVector([-0.4034683668457726, -0.6563291675532259, 0.4, 0.2802924717500229, -2.0133009340001062, -0.038004745727148875])
+print('>', '[%s]' % ', '.join(map(str, xd)))
+if ccRA.movj(xd):
+    print('< [ok] target 1')
+    print('< [wait...] target 1')
+    ccRA.wait()
+else:
+    print('< [fail] target 1')
+
+xd = yarp.DVector([-0.4034683668457726, -0.6563291675532259, 0.31, 0.2802924717500229, -2.0133009340001062, -0.038004745727148875])
+print('>', '[%s]' % ', '.join(map(str, xd)))
+if ccRA.movj(xd):
+    print('< [ok] target 2')
+    print('< [wait...] target 2')
+    ccRA.wait()
+else:
+    print('< [fail] target 2')
+
+xd = yarp.DVector([-0.4034683668457726, -0.4563291675532259, 0.31, 0.2802924717500229, -2.0133009340001062, -0.038004745727148875])
+print('>', '[%s]' % ', '.join(map(str, xd)))
+if ccRA.movj(xd):
+    print('< [ok] target 3')
+    print('< [wait...] target 3')
+    ccRA.wait()
+else:
+    print('< [fail] target 3')
