@@ -49,16 +49,16 @@ if not ddRA.isValid():
 posRA = ddRA.viewIPositionControl()
 axesRA = posRA.getAxes()
 
-#-- Prepare Cartesian Control RA (CCRA)
-optionsCCRA = yarp.Property()
-optionsCCRA.put('device', 'CartesianControlClient')
-optionsCCRA.put('cartesianRemote', '/teoSim/rightArm/CartesianControl')
-optionsCCRA.put('cartesianLocal', '/alma/teoSim/rightArm/CartesianControl')
-ddCCRA = yarp.PolyDriver(optionsCCRA)
-if not ddCCRA.isValid():
-    print('[error] Cannot connect to: /teoSim/rightArm/CartesianControl')
+#-- Prepare Cartesian Control T and RA (ccTRA)
+optionsCCTRA = yarp.Property()
+optionsCCTRA.put('device', 'CartesianControlClient')
+optionsCCTRA.put('cartesianRemote', '/teoSim/trunkAndRightArm/CartesianControl')
+optionsCCTRA.put('cartesianLocal', '/alma/teoSim/trunkAndRightArm/CartesianControl')
+ddccTRA = yarp.PolyDriver(optionsCCTRA)
+if not ddccTRA.isValid():
+    print('[error] Cannot connect to: /teoSim/trunkAndRightArm/CartesianControl')
     quit()
-ccRA = kd.viewICartesianControl(ddCCRA)
+ccTRA = kd.viewICartesianControl(ddccTRA)
 
 #-- Pre-prog
 posT.positionMove(0, DEFAULT_TRUNK_PAN)
@@ -111,36 +111,31 @@ q[5] = -25.000
 posRA.positionMove(q)
 while not posRA.checkMotionDone():
     sleep(0.1)
+"""
 
 print('> stat')
 x = yarp.DVector()
-ret, state, ts = ccRA.stat(x)
+ret, state, ts = ccTRA.stat(x)
 print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
-"""
 
-xd = yarp.DVector([-0.4034683668457726, -0.6563291675532259, 0.4, 0.2802924717500229, -2.0133009340001062, -0.038004745727148875])
-print('>', '[%s]' % ', '.join(map(str, xd)))
-if ccRA.movj(xd):
-    print('< [ok] target 1')
-    print('< [wait...] target 1')
-    ccRA.wait()
-else:
-    print('< [fail] target 1')
+xds = [
+    [0.21918189477647118, -0.7090359996295917, 0.5, 0.8053611301061854, -1.3063011250514696, 0.5274607060792096],
+    [0.21918189477647118, -0.7090359996295917, 0.4, 0.8053611301061854, -1.3063011250514696, 0.5274607060792096],
+    [0.21918189477647118, -0.7090359996295917, 0.5, 0.8053611301061854, -1.3063011250514696, 0.5274607060792096]
+]
 
-xd = yarp.DVector([-0.4034683668457726, -0.6563291675532259, 0.31, 0.2802924717500229, -2.0133009340001062, -0.038004745727148875])
-print('>', '[%s]' % ', '.join(map(str, xd)))
-if ccRA.movj(xd):
-    print('< [ok] target 2')
-    print('< [wait...] target 2')
-    ccRA.wait()
-else:
-    print('< [fail] target 2')
-
-xd = yarp.DVector([-0.4034683668457726, -0.4563291675532259, 0.31, 0.2802924717500229, -2.0133009340001062, -0.038004745727148875])
-print('>', '[%s]' % ', '.join(map(str, xd)))
-if ccRA.movj(xd):
-    print('< [ok] target 3')
-    print('< [wait...] target 3')
-    ccRA.wait()
-else:
-    print('< [fail] target 3')
+for i in range(len(xds)):
+    sleep(0.2)
+    print('-- movement ' + str(i + 1) + ':')
+    xd = yarp.DVector(xds[i])
+    print('>', '[%s]' % ', '.join(map(str, xd)))
+    if ccTRA.movl(xd):
+        print('< [ok]')
+        print('< [wait...]')
+        ccTRA.wait()
+        print('> stat')
+        x = yarp.DVector()
+        ret, state, ts = ccTRA.stat(x)
+        print('<', yarp.decode(state), '[%s]' % ', '.join(map(str, x)))
+    else:
+        print('< [fail]')
