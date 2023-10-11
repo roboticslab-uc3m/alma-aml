@@ -220,7 +220,7 @@ SIM_PERIOD_MS = 500.0
 env = gym.make(
     "gymnasium_playground/FakeIroning-v0",
     render_mode=None,  # "human", "text", None
-    inFileStr="map1-ironing.csv",
+    inFileStr="map2.csv",
     initX=2,
     initY=2,
     # goalX=7,
