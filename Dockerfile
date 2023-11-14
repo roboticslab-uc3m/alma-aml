@@ -1,6 +1,6 @@
 FROM cielavenir/openrave:jammy
 
-ARG SSL_DEBFILE="libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb"
+ARG SSL_DEBFILE="libssl1.1_1.1.1f-1ubuntu2.20_amd64.deb"
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG YCM="0.15.3"
 ARG YARP="3.7.2"
