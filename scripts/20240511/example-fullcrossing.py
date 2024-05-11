@@ -12,6 +12,7 @@ alg.removeRepetitions = True
 
 alg.atomization = []
 for i in set_of_all_constants:
+    print("i", i)
     c = alg.cmanager.setNewConstantIndex()
     at = sc.atom(alg.epoch, alg.generation, [c])
     alg.atomization.append(at)
