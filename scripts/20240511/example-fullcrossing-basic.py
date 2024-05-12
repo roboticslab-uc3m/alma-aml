@@ -24,8 +24,7 @@ def PosRel(L, R):
 print("* pRel1")
 pRel1 = PosRel("a","b")
 alg.enforce(pRel1.L, pRel1.H) # full crossing
-"""
+
 print("* pRel2")
 pRel2 = PosRel("b","c")
 alg.enforce(pRel2.L, pRel2.H) # full crossing
-"""
