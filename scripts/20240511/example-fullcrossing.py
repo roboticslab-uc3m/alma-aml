@@ -18,6 +18,7 @@ for i in set_of_all_constants:
     alg.atomization.append(at)
 
 vIndex = alg.cmanager.setNewConstantIndexWithName("v")
+print("vIndex", vIndex)
 vTerm = sc.LCSegment([vIndex], alg.cmanager)
 at = sc.atom(alg.epoch, alg.generation, [vIndex])
 alg.atomization.append(at)
