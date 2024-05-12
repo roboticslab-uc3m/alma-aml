@@ -17,13 +17,9 @@ for constant_name in constant_names:
     alg.atomization.append(at)
 
 def PosRel(L, R):
-    return sc.relation(
-        sc.LCSegment(alg.cmanager.definedWithName[L], alg.cmanager), # note with/without {} 
-        sc.LCSegment(alg.cmanager.definedWithName[R], alg.cmanager),
-        True,
-        alg.generation,
-        region=1,
-    )
+    lTerm = sc.LCSegment(alg.cmanager.definedWithName[L], alg.cmanager) # note with/without {} in first param
+    rTerm = sc.LCSegment(alg.cmanager.definedWithName[R], alg.cmanager)
+    return sc.relation(lTerm, rTerm, True, alg.generation, region=1)
 
 pRel1 = PosRel("a","b")
 alg.enforce(pRel1.L, pRel1.H) # full crossing
