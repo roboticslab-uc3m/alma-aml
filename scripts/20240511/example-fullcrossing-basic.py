@@ -18,8 +18,8 @@ for constant_name in constant_names:
 
 def PosRel(L, R):
     return sc.relation(
-        sc.LCSegment(0, alg.cmanager), # note with/without {} 
-        sc.LCSegment(1, alg.cmanager),
+        sc.LCSegment(alg.cmanager.definedWithName[L], alg.cmanager), # note with/without {} 
+        sc.LCSegment(alg.cmanager.definedWithName[R], alg.cmanager),
         True,
         alg.generation,
         region=1,
