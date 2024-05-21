@@ -27,7 +27,7 @@ def NegRel(L, R):
     return sc.relation(lTerm, rTerm, False, alg.generation, region=1)
 
 pRel = PosRel("a","b")
-# NO hago ni enforce ni nada, pero da True:
+# NO hago ni enforce ni nada, da False:
 print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
 
 
