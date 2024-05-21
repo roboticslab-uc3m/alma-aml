@@ -31,20 +31,19 @@ pRel = PosRel("a","b")
 print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
 
 
-print([at for at in alg.atomization])
-print([at.ucs for at in alg.atomization])
-print(alg.cmanager.definedWithName)
-print(alg.cmanager.consts)
+#print([at for at in alg.atomization])
+#print([at.ucs for at in alg.atomization])
+#print(alg.cmanager.definedWithName)
+#print(alg.cmanager.consts)
 
-# Trato de incluso de enforce el False:
+# Trato de enforce el False:
 nRel = NegRel("a","b")
 alg.enforce(nRel.L, nRel.H)
 
-# El enforce no cambia mucho aquí:
-print([at for at in alg.atomization])
-print([at.ucs for at in alg.atomization])
-print(alg.cmanager.definedWithName)
-print(alg.cmanager.consts)
+#print([at for at in alg.atomization])
+#print([at.ucs for at in alg.atomization])
+#print(alg.cmanager.definedWithName)
+#print(alg.cmanager.consts)
 
-# Y además sigue dando True:
+# Y empieza a dar True:
 print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
