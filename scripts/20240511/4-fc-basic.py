@@ -4,7 +4,7 @@ from aml import amlSimpleLibrary as sc
 constant_names = ["a", "b", "c"]
 
 alg = sc.embedder()
-alg.verbose = True
+alg.verbose = False
 alg.binary = True # only for binary classification
 alg.calculateRedundacy = True
 alg.removeRepetitions = True
@@ -32,7 +32,7 @@ alg.enforce(pRelAB.L, pRelAB.H) # full crossing
 print("pRelAC is: ", sc.AisInB( pRelAC.L, pRelAC.H, alg.atomization))
 
 print("* pRelBC")
-pRelAB = PosRel("b","c")
-alg.enforce(pRelAB.L, pRelAB.H) # full crossing
+pRelBC = PosRel("b","c")
+alg.enforce(pRelBC.L, pRelBC.H) # full crossing
 
 print("pRelAC is: ", sc.AisInB( pRelAC.L, pRelAC.H, alg.atomization))
