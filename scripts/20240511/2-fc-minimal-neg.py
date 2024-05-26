@@ -4,7 +4,7 @@ from aml import amlSimpleLibrary as sc
 constant_names = ["a", "b"]
 
 alg = sc.embedder()
-alg.verbose = True
+alg.verbose = False
 alg.binary = True # only for binary classification
 alg.calculateRedundacy = True
 alg.removeRepetitions = True
@@ -24,12 +24,11 @@ def PosRel(L, R):
 def NegRel(L, R):
     lTerm = sc.LCSegment([alg.cmanager.definedWithName[L]], alg.cmanager)
     rTerm = sc.LCSegment(alg.cmanager.definedWithName[R], alg.cmanager)
-    return sc.relation(lTerm, rTerm, False, alg.generation, region=1)
+    return sc.relation(lTerm, rTerm, True, alg.generation, region=1)
 
 pRel = PosRel("a","b")
 # NO hago ni enforce ni nada, da False:
 print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
-
 
 #print([at for at in alg.atomization])
 #print([at.ucs for at in alg.atomization])
@@ -45,5 +44,5 @@ alg.enforce(nRel.L, nRel.H)
 #print(alg.cmanager.definedWithName)
 #print(alg.cmanager.consts)
 
-# Y empieza a dar True:
+# Y empieza a dar True (mal!):
 print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))

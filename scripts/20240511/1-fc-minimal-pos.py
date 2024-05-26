@@ -31,8 +31,7 @@ print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
 #print(alg.cmanager.consts)
 
 # Trato de enforce el True:
-nRel = PosRel("a","b")
-alg.enforce(nRel.L, nRel.H)
+alg.enforce(pRel.L, pRel.H)
 
 #print([at for at in alg.atomization])
 #print([at.ucs for at in alg.atomization])
