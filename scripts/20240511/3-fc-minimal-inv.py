@@ -31,12 +31,13 @@ print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
 #print(alg.cmanager.consts)
 
 # Trato de enforce el True:
-alg.enforce(pRel.L, pRel.H)
+invRel = PosRel("b","a")
+alg.enforce(invRel.L, invRel.H)
 
 #print([at for at in alg.atomization])
 #print([at.ucs for at in alg.atomization])
 #print(alg.cmanager.definedWithName)
 #print(alg.cmanager.consts)
 
-# Y empieza a dar True (bien!):
+# Y empieza a dar False (bien!):
 print("pRel is: ", sc.AisInB( pRel.L, pRel.H, alg.atomization))
