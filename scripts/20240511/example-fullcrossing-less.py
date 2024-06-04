@@ -1,8 +1,7 @@
 import aml
 from aml import amlSimpleLibrary as sc
 
-set_of_all_constants = {0, 1, 2, 3, 4, 5, 6, 7} # (b[0][0], b[0][1], b[1][0], b[1][1], w[0][0], ... )
-#set_of_all_constants = {0, 1} # (b[0][0], b[0][1], w[0][0], ... )
+set_of_all_constants = {0, 1, 2, 3, 4, 5, 6, 7} # de aquí sólo importa la cantidad de elementos, influirá en vIndex
 
 alg = sc.embedder()
 alg.verbose = True
@@ -18,17 +17,16 @@ for i in set_of_all_constants:
     alg.atomization.append(at)
 
 vIndex = alg.cmanager.setNewConstantIndexWithName("v")
-print("vIndex", vIndex)
+print("vIndex", vIndex) # vIndex es importante
 vTerm = sc.LCSegment([vIndex], alg.cmanager)
 at = sc.atom(alg.epoch, alg.generation, [vIndex])
 alg.atomization.append(at)
 
 # WOW: Example can be of arbitrary length, but must contain vIndex
-example_pos_1 = {0, 1, 8} # (b,w,b,w)
-#example_pos_2 = {1, 2} # (b,w,b,b)
+example_pos_1 = {0, 1, 2, 7} # Así da AssertionError. Si cambias cualquier valor por vIndex (8 en este ejemplo), ya no rompe
+example_pos_2 = {1, 2, 4, 8} # 
 
-#example_list = [example_pos_1, example_pos_2]
-example_list = [example_pos_1]
+example_list = [example_pos_1, example_pos_2]
 
 for example in example_list:
     print("example", example)
