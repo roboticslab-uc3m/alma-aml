@@ -1,5 +1,20 @@
 # alma-top-secret
 
+## Setup
+
+### Setup: Starting 2024-07
+
+Copy `aml_engine` from `compiled_aml` here to run.
+
+Requisites from `aml`, working setup with:
+- Ubuntu 22.04.1 LTS and Ubuntu 22.04.2 LTS (possibly requires libgomp1)
+- Python 3.10.6 (possibly requires cffi)
+- OpenSSL
+  - libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
+  - libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
+
+### Setup: Before 2024-07
+
 Copy `aml` from `compiled_aml` here to run.
 
 Requisites from `aml`, working setup with:
@@ -16,6 +31,14 @@ Build:
 ```bash
 docker build -t alma-openrave -f ./Dockerfile .
 ```
+
+Run:
+
+```bash
+docker run -it --rm -v ${PWD}:/playground ghcr.io/roboticslab-uc3m/alma-playground
+```
+
+## Rocker
 
 Run via Rocker:
 
