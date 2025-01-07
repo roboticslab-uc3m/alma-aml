@@ -22,9 +22,9 @@ RUN apt update \
     && dpkg -i $SSL_DEBFILE \
     && rm $SSL_DEBFILE \
     \
-    && wget -q https://github.com/robotology/ycm/archive/refs/tags/v$YCM.tar.gz \
+    && wget -q https://github.com/robotology/ycm-cmake-modules/archive/refs/tags/v$YCM.tar.gz \
     && tar -xzf v$YCM.tar.gz \
-    && mkdir -p ycm-$YCM/build && cd ycm-$YCM/build && cmake .. \
+    && mkdir -p ycm-cmake-modules-$YCM/build && cd ycm-cmake-modules-$YCM/build && cmake .. \
     && make -j$(nproc) && make install && cd ../.. && rm v$YCM.tar.gz \
     \
     && wget -q https://github.com/robotology/yarp/archive/refs/tags/v$YARP.tar.gz \
