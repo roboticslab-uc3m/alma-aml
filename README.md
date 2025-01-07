@@ -26,31 +26,39 @@ Requisites from `aml`, working setup with:
 
 ## Docker
 
+### OpenRAVE environment, built from this repository
+
 Build:
 
 ```bash
 docker build -t alma-openrave -f ./Dockerfile .
 ```
 
-Run:
+Tag:
 
 ```bash
-docker run -it --rm -v ${PWD}:/playground ghcr.io/roboticslab-uc3m/alma-playground
+docker tag alma-openrave ghcr.io/jgvictores/alma-openrave
 ```
-
-## Rocker
 
 Run via Rocker:
 
 - With NVIDIA:
 
 ```bash
-rocker --home --user --nvidia --x11 --privileged alma-openrave /bin/bash
+rocker --home --user --nvidia --x11 --privileged ghcr.io/jgvictores/alma-openrave /bin/bash
 ```
 
 - With intel integrated graphics support:
 
 
 ```bash
-rocker --home --user --devices /dev/dri/card0 --x11 --privileged alma-openrave /bin/bash
+rocker --home --user --devices /dev/dri/card0 --x11 --privileged ghcr.io/jgvictores/alma-openrave /bin/bash
+```
+
+### Gym environments which connect to OpenRAVE/real, from external repository
+
+Run:
+
+```bash
+docker run -it --rm -v ${PWD}:/playground ghcr.io/roboticslab-uc3m/alma-playground
 ```
