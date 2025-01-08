@@ -12,8 +12,19 @@ ARG OROCOS_KINEMATICS_DYNAMICS="1.5.1"
 ARG KINEMATICS_DYNAMICS_COMMIT="f4bc01f1325efc64317be58e4eeb3fc44f27f496"
 
 RUN apt update \
+    && apt-get install -y --no-install-recommends software-properties-common gpg-agent \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get purge -y --autoremove software-properties-common gpg-agent \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends wget python3.11 libgomp1 \
+    && ln -fs /usr/bin/python3.11 /usr/bin/python3 \
+    && wget -q https://bootstrap.pypa.io/get-pip.py \
+    && python3 get-pip.py \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir cffi numpy \
+    \
     && apt install -y --no-install-recommends \
-        wget unzip swig terminator \
+        unzip swig terminator \
         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev qml-module-qtquick2 qml-module-qtquick-window2 qml-module-qtmultimedia \
         qml-module-qtquick-dialogs qml-module-qtquick-controls qml-module-qt-labs-folderlistmodel qml-module-qt-labs-settings \
         libedit-dev \
