@@ -28,7 +28,7 @@ Requisites from `aml`, working setup with:
 
 ## Docker
 
-### OpenRAVE environment, built from this repository
+### OpenRAVE environment, built from this repository (note: python version not updated yet to work with latest aml engine)
 
 Build:
 
@@ -57,7 +57,7 @@ rocker --home --user --nvidia --x11 --privileged ghcr.io/jgvictores/alma-openrav
 rocker --home --user --devices /dev/dri/card0 --x11 --privileged ghcr.io/jgvictores/alma-openrave /bin/bash
 ```
 
-### Gym environments which connect to OpenRAVE/real, from external repository
+### Gym environments which connect to OpenRAVE/real, from external repository (note: python version updated to work with latest aml engine)
 
 Run:
 
