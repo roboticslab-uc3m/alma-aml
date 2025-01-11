@@ -2,7 +2,7 @@
 
 ## Setup
 
-### Setup: Starting 2024-07
+### Setup (post-2024-07)
 
 Copy `aml_engine` from `compiled_aml` here to run.
 
@@ -14,7 +14,7 @@ Requisites from `aml`, working setup with:
   - libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
   - libssl1.1_1.1.1f-1ubuntu2.22_amd64.deb
 
-### Setup: Before 2024-07
+### Setup (pre-2024-07)
 
 Copy `aml` from `compiled_aml` here to run.
 
@@ -28,7 +28,7 @@ Requisites from `aml`, working setup with:
 
 ## Docker
 
-### OpenRAVE environment, built from this repository (note: python version not updated yet to work with latest aml engine)
+### OpenRAVE environment, built from this repository (python version for post-2024-07 aml engine)
 
 Build:
 
@@ -57,7 +57,17 @@ rocker --home --user --nvidia --x11 --privileged ghcr.io/jgvictores/alma-openrav
 rocker --home --user --devices /dev/dri/card0 --x11 --privileged ghcr.io/jgvictores/alma-openrave /bin/bash
 ```
 
-### Gym environments which connect to OpenRAVE/real, from external repository (note: python version updated to work with latest aml engine)
+Launch `yarpmanager`:
+
+```bash
+cd repos/jgvictores/alma-top-secret/applications/
+yarpserver &
+yarpmanager
+```
+
+In `Applications` you will find the OpenRAVE-based `ironingSim_App`.
+
+### Gym environments which connect to OpenRAVE/real, from external repository (python version for post-2024-07 aml engine)
 
 Run:
 
