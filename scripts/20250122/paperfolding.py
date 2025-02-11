@@ -182,7 +182,7 @@ def getOTerm(eid):
     return set(ret)
 
 # construct an example
-def getFoldExample(eid, typeOfDataset=1):
+def getFoldExample(eid):
     window = eid.window
     window, p_pick, p_place = createExample(window)
     retMatrix = imageWindowToMatrix(window)
@@ -202,7 +202,6 @@ def generateDataset(
     useEnvironment,
     generation,
     region,
-    typeOfDataset=0,
 ):
     print("<Generating set", end="", flush=True)
     pDataSet = []
@@ -213,7 +212,7 @@ def generateDataset(
     RADIO = 2
 
     for e in range(pSize):
-        exampleTerm, oTerm = exampleGeneratorFunction(eid, typeOfDataset)
+        exampleTerm, oTerm = exampleGeneratorFunction(eid)
         exampleTerm = LCS(exampleTerm, cmanager)
         oTerm = LCS(oTerm, cmanager)
 
@@ -265,7 +264,6 @@ def generateTestSet(
             False,
             generation,
             region,
-            typeOfDataset=0,
     )
 
     pTest.extend(nTest)
