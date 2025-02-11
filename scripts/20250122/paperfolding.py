@@ -189,13 +189,16 @@ def getOTerm(eid):
 
 # construct an example
 def getFoldExample(eid, idx):
-    window = eid.window
-    window, p_pick, p_place = createExample(window)
-    retMatrix = imageWindowToMatrix(window)
+    #j#window = eid.window
+    #j#window, p_pick, p_place = createExample(window)
+    #j#retMatrix = imageWindowToMatrix(window)
+    image_name = path.join(DATASET_DIR,"image"+str(idx)+".png")
+    retMatrix = imageFileToMatrix(image_name)
     term = exampleToConstants(retMatrix)
+    print("labels[idx]",labels[idx])
 
-    eid.pick = p_pick
-    eid.place = p_place
+    eid.pick = (0, 0) #j#tmp
+    eid.place = (0, 0) #j#tmp
 
     return set(term), getOTerm(eid)
 
