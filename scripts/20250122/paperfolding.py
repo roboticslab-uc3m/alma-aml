@@ -161,34 +161,6 @@ def exampleToConstants(intensityMatrix):
             j += 1
     return set(ret)
 
-# this code does not run
-def previousUnusedCode(window):
-    labels_file = open("labels.txt", "w") # or "a" to append
-    for sample_idx in range(NUM_OUTPUT_SAMPLES):
-
-        window, p_pick, p_place = createExample(window)
-
-        if False:
-            #pygame.display.flip()
-            image_name = 'image'+str(sample_idx)+'.png'
-            pygame.image.save(window, image_name)
-
-            labels_string = ', '.join([image_name, str(int(p_pick[0])),str(int(p_pick[1])),
-            str(int(p_place[0])), str(int(p_place[1]))])
-            labels_file.write(labels_string+'\n')
-
-            if((sample_idx % 250) == 0):
-                print(labels_string)
-        else:
-            retMatrix = imageWindowToMatrix(window)
-            term = exampleToConstants(retMatrix)
-
-            print(retMatrix)
-            input("d")
-
-    labels_file.close()
-
-
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -537,73 +509,70 @@ def testModel(window,  name, exampleGeneratorFunction, constants):
     print("atomization", len(atomization))
 
     # preprocessing (can be slow)
-    if True:
-        if True:
-            # filter out size one (optional)
-            atomization = [at for at in atomization if not at.isSizeOne()]
-            print("atomization:", len(atomization), "atoms.")
+    # filter out size one (optional)
+    atomization = [at for at in atomization if not at.isSizeOne()]
+    print("atomization:", len(atomization), "atoms.")
 
-        print("preprocessing can take a few minutes...")
+    print("preprocessing can take a few minutes...")
 
-        # obtain or create an output constant for every pixel value at each point of the 4x2 chains
-        fields = [None]*4
-        for s in [0, 1, 2, 3]:
-            up = 2*s
-            down = 2*s +1
-            cFromVal = []
-            for value in range(0, IMAGE_SIZE[s % 2]):
-                cu = cmanager.getOrSetConstantIndexFromChainAndValue(up, value)
-                cd = cmanager.getOrSetConstantIndexFromChainAndValue(down, -value)
-                constants.add(cu)
-                constants.add(cd)
-                cFromVal.append([cu, cd])
-            fields[s] = cFromVal
-        testConsts = aml.CSegment(constants)
+    # obtain or create an output constant for every pixel value at each point of the 4x2 chains
+    fields = [None]*4
+    for s in [0, 1, 2, 3]:
+        up = 2*s
+        down = 2*s +1
+        cFromVal = []
+        for value in range(0, IMAGE_SIZE[s % 2]):
+            cu = cmanager.getOrSetConstantIndexFromChainAndValue(up, value)
+            cd = cmanager.getOrSetConstantIndexFromChainAndValue(down, -value)
+            constants.add(cu)
+            constants.add(cd)
+            cFromVal.append([cu, cd])
+        fields[s] = cFromVal
+    testConsts = aml.CSegment(constants)
 
-        # associate atoms to constents
-        las = aml.calculateLowerAtomicSegment(atomization, testConsts, True)
+    # associate atoms to constents
+    las = aml.calculateLowerAtomicSegment(atomization, testConsts, True)
 
     # start testing
-    if True:
-        # generate a test set
-        eid = aml.exampleInterpretationData()
-        eid.window = window
-        eid.cmanager = cmanager
-        sizeOfTest =  10
-        region = 1
-        testSet = generateTestSet(
-                    eid,
-                    exampleGeneratorFunction,
-                    sizeOfTest,
-                    0,
-                    region,
-                )
-        print("len(testSet)", len(testSet))
-        testSet = [r for r in testSet if r.positive]
+    # generate a test set
+    eid = aml.exampleInterpretationData()
+    eid.window = window
+    eid.cmanager = cmanager
+    sizeOfTest =  10
+    region = 1
+    testSet = generateTestSet(
+                eid,
+                exampleGeneratorFunction,
+                sizeOfTest,
+                0,
+                region,
+            )
+    print("len(testSet)", len(testSet))
+    testSet = [r for r in testSet if r.positive]
 
-        # associate atoms to each term mentioned in the test set
-        testSpace = aml.termSpace()
-        for rel in testSet:
-            rel.wL = testSpace.add(rel.L)
-            rel.wH = testSpace.add(rel.R)
-        print("len(cmanager.getConstantSet())", len(cmanager.getConstantSet()))
-        testSpace.calculateLowerAtomicSegments(atomization, las)
+    # associate atoms to each term mentioned in the test set
+    testSpace = aml.termSpace()
+    for rel in testSet:
+        rel.wL = testSpace.add(rel.L)
+        rel.wH = testSpace.add(rel.R)
+    print("len(cmanager.getConstantSet())", len(cmanager.getConstantSet()))
+    testSpace.calculateLowerAtomicSegments(atomization, las)
 
-        # print ressults for eahc item of the test set
-        for r in testSet:
-            print("Correct val pick[0]:", r.pick[0])
-            testOutputField(cmanager, las, r.wH, 0, 1, IMAGE_SIZE[0])
+    # print ressults for eahc item of the test set
+    for r in testSet:
+        print("Correct val pick[0]:", r.pick[0])
+        testOutputField(cmanager, las, r.wH, 0, 1, IMAGE_SIZE[0])
 
-            print("Correct val pick[1]:", r.pick[1])
-            testOutputField(cmanager, las, r.wH, 2, 3, IMAGE_SIZE[1])
+        print("Correct val pick[1]:", r.pick[1])
+        testOutputField(cmanager, las, r.wH, 2, 3, IMAGE_SIZE[1])
 
-            print("Correct val place[0]:", r.place[0])
-            testOutputField(cmanager, las, r.wH, 4, 5, IMAGE_SIZE[0])
+        print("Correct val place[0]:", r.place[0])
+        testOutputField(cmanager, las, r.wH, 4, 5, IMAGE_SIZE[0])
 
-            print("Correct val place[0]:", r.place[1])
-            testOutputField(cmanager, las, r.wH, 6, 7, IMAGE_SIZE[1])
+        print("Correct val place[0]:", r.place[1])
+        testOutputField(cmanager, las, r.wH, 6, 7, IMAGE_SIZE[1])
 
-            input("next?")
+        input("next?")
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -623,24 +592,10 @@ if __name__ == "__main__":
 
     # input constants. 3 colors.
     constants = set([c for c in range(0, 3 * IMAGE_SIZE[0] * IMAGE_SIZE[1])])
-    if False:
-        # train a model
-        params = trainingParamaeters()
-        params.initialPTrainingExamples = 500
-        params.initialNTrainingExamples = 500
-        params.maxPTrainingExamples = 20000
-        params.maxNTrainingExamples = 20000
-        params.sizeOfQuickTest = 200
-        params.sizeOfFullTest = 1000
-        params.constants = constants
-        params.chains = set([c for c in range(0, 8)])
-
-        trainModel(window, params)
-    else:
-        # test a model
-        # name = "ATOMIZATIONS/PAPERFOLD_R_2NOROUND_50"
-        name = "PAPERFOLD_200"
-        # name = "ATOMIZATIONS/PAPERFOLD_NOTROUND_100"
-        testModel(window, name, exampleGeneratorFunction, constants)
+    # test a model
+    # name = "ATOMIZATIONS/PAPERFOLD_R_2NOROUND_50"
+    name = "PAPERFOLD_200"
+    # name = "ATOMIZATIONS/PAPERFOLD_NOTROUND_100"
+    testModel(window, name, exampleGeneratorFunction, constants)
 
     pygame.quit()
