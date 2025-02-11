@@ -210,30 +210,28 @@ def generateDataset(
 
     RADIO = 2
 
-    for e in range(pSize):
-        exampleTerm, oTerm = exampleGeneratorFunction(eid)
-        exampleTerm = LCS(exampleTerm, cmanager)
-        oTerm = LCS(oTerm, cmanager)
+    exampleTerm, oTerm = exampleGeneratorFunction(eid)
+    exampleTerm = LCS(exampleTerm, cmanager)
+    oTerm = LCS(oTerm, cmanager)
 
-        pick = eid.pick
-        place = eid.place
-        oTermList.append([oTerm, pick, place, exampleTerm])
+    pick = eid.pick
+    place = eid.place
+    oTermList.append([oTerm, pick, place, exampleTerm])
 
-        pRel = aml.duple(oTerm, exampleTerm, True, generation, region)
-        pRel.pick = pick
-        pRel.place = place
-        pDataSet.append(pRel)
+    pRel = aml.duple(oTerm, exampleTerm, True, generation, region)
+    pRel.pick = pick
+    pRel.place = place
+    pDataSet.append(pRel)
 
-    while len(nDataSet) < nSize:
-        oterm1, pick1, place1, exampleTerm1 = oTermList[
-            random.randint(0, len(oTermList)) - 1
-        ]
-        oterm2, pick2, place2, exampleTerm2 = oTermList[
-            random.randint(0, len(oTermList)) - 1
-        ]
-        if abs((pick1[0] - pick2[0])**2 + (pick1[1] - pick2[1])**2) > RADIO**2:
-            nRel = aml.duple(oterm2, exampleTerm1, False, generation, region)
-            nDataSet.append(nRel)
+    oterm1, pick1, place1, exampleTerm1 = oTermList[
+        random.randint(0, len(oTermList)) - 1
+    ]
+    oterm2, pick2, place2, exampleTerm2 = oTermList[
+        random.randint(0, len(oTermList)) - 1
+    ]
+    if abs((pick1[0] - pick2[0])**2 + (pick1[1] - pick2[1])**2) > RADIO**2:
+        nRel = aml.duple(oterm2, exampleTerm1, False, generation, region)
+        nDataSet.append(nRel)
 
     print(">")
     return pDataSet, nDataSet
@@ -327,7 +325,7 @@ def testModel(window,  name, exampleGeneratorFunction, constants):
     eid = aml.exampleInterpretationData()
     eid.window = window
     eid.cmanager = cmanager
-    sizeOfTest =  10
+    sizeOfTest =  1 #j# 10
     generation = 0
     region = 1
     testSet = generateTestSet(
