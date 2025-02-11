@@ -497,28 +497,6 @@ def realValuedOutputBatchLearning(
         )
         print()
 
-def trainModel(window, params):
-    model = aml.model()
-
-    eid = aml.exampleInterpretationData()
-    eid.window = window
-
-    batchLearner = aml.batchLearner(model)
-    batchLearner.params.storePositives = True
-
-    batchLearner.params.useReduceIndicators = True
-    batchLearner.params.byQuotient = False
-    batchLearner.params.staticConstants = ROUND
-
-    realValuedOutputBatchLearning(
-        batchLearner,
-        model,
-        exampleGeneratorFunction,
-        None,
-        eid,
-        params,
-    )
-
 # Obtaines the output for a given image
 def testOutputField(cmanager, las, wH, up, down, maxval):
     verbose = False
