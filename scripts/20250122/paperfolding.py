@@ -199,7 +199,6 @@ def generateDataset(
     exampleGeneratorFunction,
     pSize,
     nSize,
-    useEnvironment,
     generation,
     region,
 ):
@@ -224,15 +223,6 @@ def generateDataset(
         pRel.pick = pick
         pRel.place = place
         pDataSet.append(pRel)
-
-        if useEnvironment and len(nDataSet) < nSize/3:
-            eid.pick = (pick[0] + RADIO*random.randint(-1, 1), pick[1] + RADIO*random.randint(-1, 1))
-            eid.place = (place[0] + RADIO*random.randint(-1, 1), place[1] + RADIO*random.randint(-1, 1))
-            if eid.pick[0] != pick[0] or eid.pick[1] != pick[1] or eid.place[0] != place[0] or eid.place[1] != place[1]:
-                noTerm = getOTerm(eid)
-                noTerm = LCS(noTerm, cmanager)
-                nRel = aml.duple(noTerm, exampleTerm, False, generation, region)
-                nDataSet.append(nRel)
 
     while len(nDataSet) < nSize:
         oterm1, pick1, place1, exampleTerm1 = oTermList[
@@ -261,7 +251,6 @@ def generateTestSet(
             exampleGeneratorFunction,
             size,
             size,
-            False,
             generation,
             region,
     )
