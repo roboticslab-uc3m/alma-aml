@@ -196,7 +196,6 @@ def getFoldExample(eid):
 # generate a new dataset
 def generateDataset(
     eid,
-    exampleGeneratorFunction,
     pSize,
     nSize,
     generation,
@@ -210,7 +209,7 @@ def generateDataset(
 
     RADIO = 2
 
-    exampleTerm, oTerm = exampleGeneratorFunction(eid)
+    exampleTerm, oTerm = getFoldExample(eid)
     exampleTerm = LCS(exampleTerm, cmanager)
     oTerm = LCS(oTerm, cmanager)
 
@@ -239,14 +238,12 @@ def generateDataset(
 # generate a test dataset
 def generateTestSet(
     eid,
-    exampleGeneratorFunction,
     size,
     generation,
     region,
 ):
     pTest, nTest = generateDataset(
             eid,
-            exampleGeneratorFunction,
             size,
             size,
             generation,
@@ -288,7 +285,7 @@ def testOutputField(cmanager, las, wH, up, down, maxval):
 
 
 
-def testModel(window,  name, exampleGeneratorFunction, constants):
+def testModel(window,  name, constants):
     #Load the model`
 
     print("WARNING: Loading is slow")
@@ -330,7 +327,6 @@ def testModel(window,  name, exampleGeneratorFunction, constants):
     region = 1
     testSet = generateTestSet(
                 eid,
-                exampleGeneratorFunction,
                 sizeOfTest,
                 generation,
                 region,
@@ -371,14 +367,12 @@ if __name__ == "__main__":
     pygame.init()
     window = pygame.display.set_mode(IMAGE_SIZE)
 
-    exampleGeneratorFunction = getFoldExample
-
     # input constants. 3 colors.
     constants = set([c for c in range(0, 3 * IMAGE_SIZE[0] * IMAGE_SIZE[1])])
     # test a model
     # name = "ATOMIZATIONS/PAPERFOLD_R_2NOROUND_50"
     name = "PAPERFOLD_200"
     # name = "ATOMIZATIONS/PAPERFOLD_NOTROUND_100"
-    testModel(window, name, exampleGeneratorFunction, constants)
+    testModel(window, name, constants)
 
     pygame.quit()
