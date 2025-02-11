@@ -7,6 +7,10 @@ import os
 import pickle
 
 import pygame
+import numpy as np
+from os import path
+
+DATASET_DIR = "dataset"
 
 NUM_OUTPUT_SAMPLES = 10
 
@@ -28,6 +32,8 @@ RANSEED = 123456789
 MAX_ITER = 100000000
 INITIAL_ZERO_CONST = -1
 
+# ------------------------------------------------------------------------------
+labels = np.loadtxt(path.join(DATASET_DIR,"labels.txt"), delimiter=',', usecols=range(1,5))
 # ------------------------------------------------------------------------------
 
 def scale(origin, point, scale):
@@ -182,7 +188,7 @@ def getOTerm(eid):
     return set(ret)
 
 # construct an example
-def getFoldExample(eid):
+def getFoldExample(eid, idx):
     window = eid.window
     window, p_pick, p_place = createExample(window)
     retMatrix = imageWindowToMatrix(window)
@@ -196,6 +202,7 @@ def getFoldExample(eid):
 # generate a new dataset
 def generateDataset(
     eid,
+    idx_init,
     pSize,
     nSize,
     generation,
@@ -209,7 +216,7 @@ def generateDataset(
 
     RADIO = 2
 
-    exampleTerm, oTerm = getFoldExample(eid)
+    exampleTerm, oTerm = getFoldExample(eid, idx_init)
     exampleTerm = LCS(exampleTerm, cmanager)
     oTerm = LCS(oTerm, cmanager)
 
@@ -238,12 +245,14 @@ def generateDataset(
 # generate a test dataset
 def generateTestSet(
     eid,
+    idx_init,
     size,
     generation,
     region,
 ):
     pTest, nTest = generateDataset(
             eid,
+            idx_init,
             size,
             size,
             generation,
@@ -285,7 +294,7 @@ def testOutputField(cmanager, las, wH, up, down, maxval):
 
 
 
-def testModel(window,  name, constants):
+def testModel(window,  name, constants, idx_init):
     #Load the model`
 
     print("WARNING: Loading is slow")
@@ -327,6 +336,7 @@ def testModel(window,  name, constants):
     region = 1
     testSet = generateTestSet(
                 eid,
+                idx_init,
                 sizeOfTest,
                 generation,
                 region,
@@ -373,6 +383,6 @@ if __name__ == "__main__":
     # name = "ATOMIZATIONS/PAPERFOLD_R_2NOROUND_50"
     name = "PAPERFOLD_200"
     # name = "ATOMIZATIONS/PAPERFOLD_NOTROUND_100"
-    testModel(window, name, constants)
+    testModel(window, name, constants, 10000)
 
     pygame.quit()
