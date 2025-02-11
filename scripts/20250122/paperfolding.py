@@ -29,11 +29,6 @@ MAX_ITER = 100000000
 INITIAL_ZERO_CONST = -1
 
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
 
 def scale(origin, point, scale):
     ox, oy = origin
@@ -162,30 +157,12 @@ def exampleToConstants(intensityMatrix):
     return set(ret)
 
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
 
 def LCS(param, cmanager):
     if aml.LCSegment == aml.LCSegment_impl_wChains:
         return aml.LCSegment(param, cmanager)
     else:
         return aml.LCSegment(param)
-
-
-class trainingParamaeters:
-    def __init__(self):
-        self.constants = set()
-        self.chains = set()
-        self.initialPTrainingExamples = 0
-        self.initialNTrainingExamples = 0
-        self.maxPTrainingExamples = 0
-        self.maxNTrainingExamples = 0
-        self.sizeOfQuickTest = 0
-        self.sizeOfFullTest = 0
-        self.valSize = 0
-        self.fileName = "plot"
 
 # construnct the output term with the 2 value4s for pick and the 2 values for place
 def getOTerm(eid):
@@ -575,11 +552,6 @@ def testModel(window,  name, exampleGeneratorFunction, constants):
         input("next?")
 
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-
 
 if __name__ == "__main__":
     random.seed(RANSEED)
