@@ -263,8 +263,8 @@ def generateTestSet(
             size,
             size,
             False,
-            0,
-            1,
+            generation,
+            region,
             typeOfDataset=0,
     )
 
@@ -341,12 +341,13 @@ def testModel(window,  name, exampleGeneratorFunction, constants):
     eid.window = window
     eid.cmanager = cmanager
     sizeOfTest =  10
+    generation = 0
     region = 1
     testSet = generateTestSet(
                 eid,
                 exampleGeneratorFunction,
                 sizeOfTest,
-                0,
+                generation,
                 region,
             )
     print("len(testSet)", len(testSet))
