@@ -1,5 +1,7 @@
 # alma-aml/folding
 
+Train with labeled data generated via <https://github.com/roboticslab-uc3m/alma-dataset>. You can also directly train with the publicly available dataset <https://doi.org/10.5281/zenodo.14864392>.
+
 ## Setup
 
 ### Setup (post-2024-07)
@@ -25,52 +27,3 @@ Requisites from `aml`, working setup with:
   - libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
   - libssl1.1_1.1.1f-1ubuntu2.19_amd64.deb
   - libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
-
-## Docker
-
-### OpenRAVE environment, built from this repository (python version for post-2024-07 aml engine)
-
-Build:
-
-```bash
-docker build -t alma-openrave -f ./Dockerfile .
-```
-
-Tag:
-
-```bash
-docker tag alma-openrave ghcr.io/jgvictores/alma-openrave
-```
-
-Run via Rocker:
-
-- With NVIDIA:
-
-```bash
-rocker --home --user --nvidia --x11 --privileged ghcr.io/jgvictores/alma-openrave /bin/bash
-```
-
-- With intel integrated graphics support:
-
-
-```bash
-rocker --home --user --devices /dev/dri/card0 --x11 --privileged ghcr.io/jgvictores/alma-openrave /bin/bash
-```
-
-Launch `yarpmanager`:
-
-```bash
-cd repos/jgvictores/alma-top-secret/applications/
-yarpserver &
-yarpmanager
-```
-
-In `Applications` you will find the OpenRAVE-based `ironingSim_App`.
-
-### Gym environments which connect to OpenRAVE/real, from external repository (python version for post-2024-07 aml engine)
-
-Run:
-
-```bash
-docker run -it --rm -v ${PWD}:/playground ghcr.io/roboticslab-uc3m/alma-playground
-```
