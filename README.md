@@ -1,6 +1,6 @@
 # alma-aml
 
-Algebraic Machine Learning (AML) applied algoritms to humanoid robotics domestic tasks, focusing on the laundry pipeline, specifically on the tasks of:
+Algebraic Machine Learning (AML) applied algorithms to humanoid robotics domestic tasks, focusing on the laundry pipeline, specifically on the tasks of:
 
 - [ironing](ironing/)
 - [folding](folding/)
